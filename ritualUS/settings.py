@@ -22,7 +22,6 @@ DEBUG = True
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -32,7 +31,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+AUTH_USER_MODEL = 'ritualUS.CustomUser'
+#ACCOUNT_SIGNUP_FORM_CLASS = 'ritualUS.forms.CustomSignupForm'
 
 # Application definition
 
@@ -83,6 +83,9 @@ TEMPLATES = [
     },
 ]
 
+
+
+
 WSGI_APPLICATION = 'ritualUS.wsgi.application'
 
 
@@ -108,6 +111,10 @@ if ENVIRONMENT == 'production':
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+
+ACCOUNT_FORMS = {
+    'signup': 'ritualUS.forms.CustomSignupForm',  # Sustituye 'miapp' por el nombre de tu aplicación
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

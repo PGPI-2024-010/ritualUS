@@ -20,7 +20,7 @@ class ProductType(models.Model):
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField()
-    type = models.OneToOneField(ProductType, on_delete=models.CASCADE)
+    category = Category.choices()
     description = models.CharField()
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -30,3 +30,4 @@ class Product(models.Model):
     department = models.CharField(blank=True, null=True)
     section = models.CharField(blank=True, null=True)
     factory = models.CharField(blank=True, null=True)
+    product_type = models.OneToOneField(ProductType, on_delete=models.CASCADE)

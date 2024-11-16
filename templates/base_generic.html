@@ -7,21 +7,50 @@
     <title>{% block title %}Mi Proyecto{% endblock %}</title>
     <!-- Agrega tus archivos CSS o enlaces de bibliotecas aquí -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+    <style>
+        @font-face {
+            font-family: 'Montserrat-Regular';
+            src: url("{% static 'fonts/Montserrat-Regular.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Montserrat-Medium';
+            src: url("{% static 'fonts/Montserrat-Medium.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Montserrat-Bold';
+            src: url("{% static 'fonts/Montserrat-Bold.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Montserrat-Italic';
+            src: url("{% static 'fonts/Montserrat-Italic.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Montserrat-Black';
+            src: url("{% static 'fonts/Montserrat-Black.ttf' %}") format('truetype');
+        }
+    </style>
 </head>
 <body>
-    <!-- Cabecera del sitio -->
-    <header class="bg-primary text-white py-3">
-        <div class="container">
-            <h1 class="mb-0">Bienvenido a Mi Proyecto</h1>
-            <nav>
-                <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="/">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="/accounts/login/">Iniciar sesión</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="/accounts/signup/">Registrarse</a></li>
-                </ul>
-            </nav>
-        </div>
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="/" class="logo">RitualUS</a>
+            <ul class="nav-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/products/">Productos</a></li>
+                <li><a href="/about/">Nosotros</a></li>
+                <li><a href="/contact/">Contacto</a></li>
+                <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+                <li><a href="/accounts/login/">Iniciar sesión</a></li>
+            </ul>
+        </nav>
     </header>
 
     <!-- Contenido principal -->

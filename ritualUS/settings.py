@@ -32,7 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'ritualUS.CustomUser'
-#ACCOUNT_SIGNUP_FORM_CLASS = 'ritualUS.forms.CustomSignupForm'
 
 # Application definition
 
@@ -113,7 +112,8 @@ if ENVIRONMENT == 'production':
 
 
 ACCOUNT_FORMS = {
-    'signup': 'ritualUS.forms.CustomSignupForm',  # Sustituye 'miapp' por el nombre de tu aplicación
+    'signup': 'ritualUS.forms.CustomSignupForm', 
+    'login': 'ritualUS.forms.CustomLoginForm'
 }
 
 # Password validation
@@ -162,5 +162,5 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Opcional: 'mandatory' o 'none' según prefieras
-
+#ACCOUNT_SIGNUP_FORM_CLASS = 'ritualUS.forms.CustomSignupForm'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

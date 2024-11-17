@@ -7,7 +7,7 @@
             <p>¡Únete a nuestra comunidad y empieza a disfrutar de todos nuestros productos!</p>
             <form method="POST" action="{% url 'account_signup' %}">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form.as_p }}          
                 <button type="submit" class="btn btn-primary">Registrar</button>
             </form>
 

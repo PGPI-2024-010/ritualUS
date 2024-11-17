@@ -5,12 +5,13 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomSignupForm, CustomLoginForm
 from django.shortcuts import render, redirect
 
+
 class Home(ListView):
     template_name = 'index.html'
     queryset = Item.objects.filter(is_active=True)
     context_object_name = 'items'
 
-
+    
 def signup_view(request):
     if request.method == 'POST':
         form = CustomSignupForm(request.POST)
@@ -21,4 +22,3 @@ def signup_view(request):
         form = CustomSignupForm()
     
     return render(request, 'signup.html', {'form': form})
-

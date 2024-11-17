@@ -162,5 +162,4 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Opcional: 'mandatory' o 'none' según prefieras
-#ACCOUNT_SIGNUP_FORM_CLASS = 'ritualUS.forms.CustomSignupForm'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView
-from .models import Item, Category
+from .models import Product, Category
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomSignupForm, CustomLoginForm
 from django.shortcuts import render, redirect
@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect
 
 class Home(ListView):
     template_name = 'index.html'
-    queryset = Item.objects.filter(is_active=True)
-    context_object_name = 'items'
+    queryset = Product.objects.filter(is_available=True)
+    context_object_name = 'products'
 
     
 def signup_view(request):

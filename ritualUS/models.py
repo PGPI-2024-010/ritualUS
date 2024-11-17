@@ -34,6 +34,9 @@ class Product(models.Model):
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.OneToOneField(ProductType, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+    
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=False, null=False)
     dni = models.CharField(max_length=9, unique=True, null=False)

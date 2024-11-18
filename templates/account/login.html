@@ -1,0 +1,90 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Iniciar sesión - Mi Proyecto{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Mi Proyecto</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/accounts/login/">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/signup/">Registrarse</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container mt-5">
+        {% block content %}
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-content">
+                    <h2>Iniciar sesión</h2>
+                    <p>Accede a tu cuenta para continuar disfrutando de nuestros productos.</p>
+                    <form method="POST" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+                        <!-- Aquí estamos renderizando el campo de 'username' -->
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
+                            {{ form.username }}
+                            <div class="error-message">
+                                {% for error in form.username.errors %}
+                                    <p class="error">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    
+                        <div class="form-group">
+                            <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                            {{ form.password }}
+                            <div class="error-message">
+                                {% for error in form.password.errors %}
+                                    <p class="error">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </form>
+
+
+                    <div class="auth-footer">
+                        <p>¿No tienes una cuenta? <a href="{% url 'account_signup' %}">Regístrate aquí</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Mi Proyecto. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -25,22 +25,30 @@ class Category(Enum):
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100, choices=Category.choices())
+    category = models.CharField(max_length=50, choices=Category.choices(),default=Category.CANDLE.value)
+    
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100, choices=Category.choices())
     description = models.CharField(max_length=500)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
     image = models.ImageField()
     stock = models.IntegerField()
-    is_available = models.BooleanField()
     department = models.CharField(max_length=100, blank=True, null=True)
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name="product")
+
+    @property
+    def is_available(self):
+        return self.stock > 0
+    
+    def __str__(self):
+        return self.name
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
@@ -50,17 +58,6 @@ class Address(models.Model):
     street = models.CharField(max_length=100)
     number = models.IntegerField()
     apartment_number = models.CharField(max_length=50)
-
-class User(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    surname = models.CharField(max_length=100)
-    dni = models.CharField(max_length=100, unique=True)
-    username = models.CharField(max_length=100, unique=True)
-    password = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    telephone_number = models.CharField(max_length=9)
-    address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name="user")
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)

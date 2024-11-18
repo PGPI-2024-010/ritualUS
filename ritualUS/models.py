@@ -17,12 +17,14 @@ class Category(Enum):
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = Category.choices()
+    category = models.CharField(max_length=50, choices=Category.choices(),default=Category.CANDLE.value)
+    
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = Category.choices()
     description = models.CharField(max_length=500)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -32,10 +34,11 @@ class Product(models.Model):
     department = models.CharField(max_length=100, blank=True, null=True)
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
-    product_type = models.OneToOneField(ProductType, on_delete=models.CASCADE)
+    product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
+    #slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return self.name
     
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=False, null=False)

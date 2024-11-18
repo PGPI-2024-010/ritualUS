@@ -1,0 +1,19 @@
+<!-- myapp/templates/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de {{ user.username }}</title>
+</head>
+<body>
+    <h1>Perfil de {{ user.username }}</h1>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Teléfono:</strong> {{ user.phone_number }}</p>
+    <p><strong>DNI:</strong> {{ user.dni }}</p>
+
+    <form action="{% url 'account_logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Cerrar Sesión</button>
+    </form>
+</body>
+</html>

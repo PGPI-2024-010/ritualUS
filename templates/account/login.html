@@ -39,28 +39,30 @@
                 <div class="auth-content">
                     <h2>Iniciar sesión</h2>
                     <p>Accede a tu cuenta para continuar disfrutando de nuestros productos.</p>
-                    <form method="POST" action="{% url 'account_login' %}">
-                        {% csrf_token %}
-                        <!-- Aquí estamos renderizando el campo de 'username' -->
-                        <div class="form-group">
-                            <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
-                            {{ form.username }}
-                            <div class="error-message">
-                                {% for error in form.username.errors %}
-                                    <p class="error">{{ error }}</p>
+                        <form class="login" method="POST" action="{% url 'account_login' %}">
+                            {% csrf_token %}
+                            
+                            <!-- Campo de usuario o correo -->
+                            <div class="form-group">
+                              <label for="{{ form.login.id_for_label }}">Correo o Nombre de usuario</label>
+                              {{ form.login }}
+                              <div class="error-message">
+                                {% for error in form.login.errors %}
+                                  <p class="error">{{ error }}</p>
                                 {% endfor %}
+                              </div>
                             </div>
-                        </div>
-                    
-                        <div class="form-group">
-                            <label for="{{ form.password.id_for_label }}">Contraseña</label>
-                            {{ form.password }}
-                            <div class="error-message">
+                          
+                            <!-- Campo de contraseña -->
+                            <div class="form-group">
+                              <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                              {{ form.password }}
+                              <div class="error-message">
                                 {% for error in form.password.errors %}
-                                    <p class="error">{{ error }}</p>
+                                  <p class="error">{{ error }}</p>
                                 {% endfor %}
+                              </div>
                             </div>
-                        </div>
                     
                         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                     </form>

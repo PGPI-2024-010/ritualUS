@@ -39,7 +39,7 @@ class Product(models.Model):
     
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=False, null=False)
-    dni = models.CharField(max_length=9, unique=True, null=False)
+    dni = models.CharField(max_length=9, null=False)
 
     def __str__(self):
         return self.username

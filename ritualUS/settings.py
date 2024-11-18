@@ -18,6 +18,7 @@ from pathlib import Path
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3qng-%*rfl!(*3(6_a0c@g=g+-99wu@++)10$d4fl)@gf2%c!z'
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,10 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'ritualUS.CustomUser'
@@ -160,6 +157,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
+LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Opcional: 'mandatory' o 'none' según prefieras
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

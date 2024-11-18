@@ -1,14 +1,14 @@
 
 from django.views.generic import ListView
-from .models import Item, Category
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import CustomSignupForm, CustomLoginForm
+from .models import Product, Category
+from django.contrib.auth.decorators import login_required
+from .forms import CustomSignupForm
 from django.shortcuts import render, redirect
 
 
 class Home(ListView):
     template_name = 'index.html'
-    queryset = Item.objects.filter(is_active=True)
+    queryset = Product.objects.filter(is_available=True)
     context_object_name = 'items'
 
     
@@ -22,3 +22,9 @@ def signup_view(request):
         form = CustomSignupForm()
     
     return render(request, 'signup.html', {'form': form})
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+    return render(request, 'profile.html', {'user': user})

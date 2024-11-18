@@ -110,7 +110,6 @@ if ENVIRONMENT == 'production':
 
 ACCOUNT_FORMS = {
     'signup': 'ritualUS.forms.CustomSignupForm', 
-    'login': 'ritualUS.forms.CustomLoginForm'
 }
 
 # Password validation

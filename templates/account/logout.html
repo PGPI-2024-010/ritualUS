@@ -1,0 +1,32 @@
+{% extends "account/logout.html" %}
+{% load static %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/logout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h1>Mi perfil</h1>
+    </div>
+    <div class="card-body">
+        <ul class="user-info-list">
+            <li><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</li>
+            <li><strong>Email:</strong> {{ user.email }}</li>
+            <li><strong>Número de teléfono:</strong> {{ user.phone_number }}</li>
+            <li><strong>DNI:</strong> {{ user.dni }}</li>
+        </ul>
+
+
+        <div class="confirmation-section">
+            <p>¿Estás seguro/a que quieres cerrar sesión?</p>
+            {% url 'account_logout' as action_url %}
+            <form method="post" action="{{ action_url }}">
+                {% csrf_token %}
+                {{ redirect_field }}
+                <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

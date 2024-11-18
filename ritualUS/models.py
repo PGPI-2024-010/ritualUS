@@ -26,7 +26,10 @@ class Category(Enum):
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100, choices=Category.choices(), default=Category.CANDLE.value)
+    category = models.CharField(max_length=50, choices=Category.choices(),default=Category.CANDLE.value)
+    
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
@@ -36,11 +39,17 @@ class Product(models.Model):
     discount_price = models.FloatField(blank=True, null=True)
     image = models.ImageField()
     stock = models.IntegerField()
-    is_available = models.BooleanField()
     department = models.CharField(max_length=100, blank=True, null=True)
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name="product")
+
+    @property
+    def is_available(self):
+        return self.stock > 0
+    
+    def __str__(self):
+        return self.name
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
@@ -51,7 +60,6 @@ class Address(models.Model):
     number = models.IntegerField()
     apartment_number = models.CharField(max_length=50, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="address")
-
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)

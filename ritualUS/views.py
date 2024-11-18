@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 
 class Home(ListView):
     template_name = 'index.html'
-    queryset = Product.objects.filter(is_available=True)
+    queryset = Product.objects.filter(stock__gt=0)
     context_object_name = 'products'
 
     
@@ -31,6 +31,13 @@ def signup_view(request):
 
 class ProductListView(ListView):
     template_name = 'products.html' 
-    queryset = Product.objects.filter(is_available=True)  
     context_object_name = 'products'  
-    paginate_by = 2
+    paginate_by = 10
+    def get_queryset(self):
+        category_id = self.request.GET.get('category')
+        if category_id:
+            # Filtra los productos por la categoría seleccionada
+            return Product.objects.filter(product_type_id=category_id)
+        else:
+            # Si no hay filtro, muestra todos los productos
+            return Product.objects.all()

@@ -30,13 +30,15 @@ class Product(models.Model):
     discount_price = models.FloatField(blank=True, null=True)
     image = models.ImageField()
     stock = models.IntegerField()
-    is_available = models.BooleanField()
     department = models.CharField(max_length=100, blank=True, null=True)
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
-    #slug = models.SlugField(unique=True, blank=True, null=True)
 
+    @property
+    def is_available(self):
+        return self.stock > 0
+    
     def __str__(self):
         return self.name
     

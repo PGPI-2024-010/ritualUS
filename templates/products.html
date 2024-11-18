@@ -1,5 +1,6 @@
 {% extends 'base_generic.html' %}
 {% load static %}
+{% load category_template_tags %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -20,6 +21,7 @@
                 <h4 class="m-text14">Categorías</h4>
                 <ul>
                     <li><a href="/products" class="s-text13 active">Todos</a></li>
+					{% categories_li_a %}
                 </ul>
             </aside>
 
@@ -52,7 +54,11 @@
 								{{ product.price }} €
 								{% endif %}
 							</p>
+							{% if product.is_available %}
 							<a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+							{% else %}
+							<p class="out-of-stock" style="color: red; font-weight: bold;">Producto Agotado</p>
+							{% endif %}
 						</div>
 						{% empty %}
 						<p>No hay productos disponibles en este momento.</p>

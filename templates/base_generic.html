@@ -38,27 +38,26 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <a href="/" class="logo">RitualUS</a>
-            <ul class="nav-links">
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/products/">Productos</a></li>
-                <li><a href="/about/">Nosotros</a></li>
-                <li><a href="/contact/">Contacto</a></li>
-                <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                {% if user.is_authenticated %}
-                <!-- Si el usuario está autenticado, muestra "Mi perfil" y "Cerrar sesión" -->
-                <li><a href="{% url 'profile' %}">Mi perfil</a></li>
-                <li><a href="{% url 'account_logout' %}">Cerrar Sesión</a></li>
+   <!-- Navbar -->
+   <header>
+    <nav class="navbar">
+        <a href="/" class="logo">RitualUS</a>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/products/">Productos</a></li>
+            <li><a href="/about/">Nosotros</a></li>
+            <li><a href="/contact/">Contacto</a></li>
+            <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+            {% if user.is_authenticated %}
+            <!-- Si el usuario está autenticado, muestra "Mi perfil" -->
+            <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
             {% else %}
-                <!-- Si no está autenticado, muestra "Iniciar sesión" -->
-                <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
+            <!-- Si no está autenticado, muestra "Iniciar sesión" -->
+            <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
             {% endif %}
-            </ul>
-        </nav>
-    </header>
+        </ul>
+    </nav>
+</header>
 
     <!-- Contenido principal -->
     <main class="container mt-5">

@@ -25,12 +25,12 @@ class Category(Enum):
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = Category.choices()
+    category = models.CharField(max_length=100, choices=Category.choices())
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    category = Category.choices()
+    category = models.CharField(max_length=100, choices=Category.choices())
     description = models.CharField(max_length=500)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -40,10 +40,7 @@ class Product(models.Model):
     department = models.CharField(max_length=100, blank=True, null=True)
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
-    product_type = models.OneToOneField(ProductType, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return self.title
+    product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name="product")
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
@@ -63,7 +60,7 @@ class User(models.Model):
     password = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     telephone_number = models.CharField(max_length=9)
-    address = models.OneToOneField(Address, on_delete=models.CASCADE)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name="user")
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)

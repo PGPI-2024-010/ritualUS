@@ -47,7 +47,14 @@
                 <li><a href="/about/">Nosotros</a></li>
                 <li><a href="/contact/">Contacto</a></li>
                 <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                <li><a href="/accounts/login/">Iniciar sesión</a></li>
+                {% if user.is_authenticated %}
+                <!-- Si el usuario está autenticado, muestra "Mi perfil" y "Cerrar sesión" -->
+                <li><a href="{% url 'profile' %}">Mi perfil</a></li>
+                <li><a href="{% url 'account_logout' %}">Cerrar Sesión</a></li>
+            {% else %}
+                <!-- Si no está autenticado, muestra "Iniciar sesión" -->
+                <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
+            {% endif %}
             </ul>
         </nav>
     </header>

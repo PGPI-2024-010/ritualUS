@@ -41,42 +41,42 @@ class Product(models.Model):
     section = models.CharField(max_length=100, blank=True, null=True)
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.OneToOneField(ProductType, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.title
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
-    country = models.CharField()
-    city = models.CharField
-    postal_code = models.CharField()
-    street = models.CharField()
-    number = models.IntegerField
-    apartment_number = models.CharField()
+    country = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=50)
+    street = models.CharField(max_length=100)
+    number = models.IntegerField()
+    apartment_number = models.CharField(max_length=50)
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField()
-    surname = models.CharField()
-    dni = models.CharField()
-    username = models.CharField()
-    password = models.CharField()
-    email = models.EmailField()
-    telephone_number = models.CharField()
+    name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100)
+    dni = models.CharField(max_length=100, unique=True)
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    telephone_number = models.CharField(max_length=9)
     address = models.OneToOneField(Address, on_delete=models.CASCADE)
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
     date = models.DateField(auto_now_add=True)
-    payment = Payment.choices()
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    payment = models.CharField(max_length=100, choices=Payment.choices())
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order")
 
 class OrderProduct(models.Model):
-    order_id = models.OneToOneField(Order, on_delete=models.CASCADE)
-    product_id = models.OneToOneField(Product, on_delete=models.CASCADE)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product")
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_product")
     quantity = models.IntegerField()
     unity_price = models.FloatField()
 
-    def __str__(self):
-        return self.title
-    
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=False, null=False)
     dni = models.CharField(max_length=9, unique=True, null=False)

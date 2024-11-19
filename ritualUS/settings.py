@@ -160,6 +160,6 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
 LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Opcional: 'mandatory' o 'none' según prefieras
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Opcional: 'mandatory' o 'none' según prefieras
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

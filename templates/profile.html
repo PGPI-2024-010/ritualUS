@@ -1,19 +1,35 @@
+{% extends "account/logout.html" %}
+{% load static %}
+
+{% block content %}
 <!-- myapp/templates/profile.html -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil de {{ user.username }}</title>
-</head>
-<body>
-    <h1>Perfil de {{ user.username }}</h1>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Teléfono:</strong> {{ user.phone_number }}</p>
-    <p><strong>DNI:</strong> {{ user.dni }}</p>
-
-    <form action="{% url 'account_logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Cerrar Sesión</button>
-    </form>
-</body>
-</html>
+<div class="card">
+    <div class="card-header">
+        <h1>Perfil de {{ user.username }}</h1>
+    </div>
+    <div class="user-info-list">
+        <form action="{% url 'profile' %}" method="post">
+            <li><strong>Nombre de usuario:</strong>
+                <input type="text" name="username" value= "{{ user.username }}" required>
+            </li>
+            <li><strong>Nombre:</strong>
+                <input type="text" name="first_name" value= "{{ user.first_name }}" required>
+            </li>
+            <li><strong>Apellido:</strong>
+                <input type="text" name="last_name" value= "{{ user.last_name }}" required>
+            </li>
+            <li><strong>Email:</strong>
+                <input type="text" name="email" value= "{{ user.email }}" required>
+            </li>
+            <li><strong>Teléfono:</strong>
+                <input type="text" name="phone_number" value= "{{ user.phone_number }}" required>
+            </li>
+            <li><strong>DNI:</strong> {{ user.dni }}</li>
+            <p><a href="{% url 'account_change_password' %}">Cambiar la contraseña</a></p>
+            {% csrf_token %}
+            <button type="submit">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

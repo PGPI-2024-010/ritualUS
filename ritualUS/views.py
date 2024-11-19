@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
-
+from django.contrib import messages
 
 class Home(ListView):
     template_name = 'index.html'
@@ -17,6 +17,16 @@ class Home(ListView):
 @login_required
 def profile_view(request):
     user = request.user
+    if request.method == "POST":
+        user = request.user
+        user.username = request.POST.get('username')
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.phone_number = request.POST.get('phone_number')
+        user.save()
+        messages.success(request, "Perfil actualizado")
+        return redirect('account_logout')
     return render(request, 'profile.html', {'user': user})
 def signup_view(request):
     if request.method == 'POST':

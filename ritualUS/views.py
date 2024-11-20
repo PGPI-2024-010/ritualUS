@@ -1,5 +1,5 @@
 
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Product, Category
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
@@ -51,3 +51,9 @@ class ProductListView(ListView):
         else:
             # Si no hay filtro, muestra todos los productos
             return Product.objects.all()
+        
+
+class ProductDetailView(DetailView):
+    template_name = 'product_detail.html' 
+    model = Product 
+    context_object_name = 'product'

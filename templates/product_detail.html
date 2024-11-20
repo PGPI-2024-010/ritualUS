@@ -1,0 +1,40 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="product-image">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    </div>
+    <div class="details">
+        <h1>{{ product.name }}</h1>
+        
+        <p><strong>Descripción:</strong> {{ product.description }}</p>
+        
+        <p class="price">
+            {% if product.discount_price %}
+                <span class="discount-price">{{ product.discount_price }} €</span>
+                <span class="original-price">{{ product.price }} €</span>
+            {% else %}
+                {{ product.price }} €
+            {% endif %}
+        </p>
+        
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Departamento:</strong> {{ product.department }}</p>
+        <p><strong>Sección:</strong> {{ product.section }}</p>
+        <p><strong>Fábrica:</strong> {{ product.factory }}</p>
+        <p><strong>Categoría:</strong> {{ product.product_type.category }}</p>
+        
+        {% if product.is_available %}
+        <div class="action-row">
+            <div class="quantity-selector">
+                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
+            </div>
+            <a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+        </div>
+        {% else %}
+            <p class="out-of-stock">Producto Agotado</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

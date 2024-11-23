@@ -28,10 +28,11 @@
         {% if product.is_available %}
         <div class="action-row">
             <div class="quantity-selector">
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" data-max-stock="{{ product.stock }}">
             </div>
-            <a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+            <a href="{{ product.get_add_to_cart_url }}"  id="addToCartBtn" data-add-to-cart-url="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
         </div>
+        <p id="quantity-error" style="color: red; display: none;">La cantidad debe ser un número entre 1 y {{ product.stock }}.</p>
         {% else %}
             <p class="out-of-stock">Producto Agotado</p>
         {% endif %}

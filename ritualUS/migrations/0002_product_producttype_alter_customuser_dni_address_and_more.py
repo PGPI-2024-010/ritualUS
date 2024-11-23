@@ -24,7 +24,7 @@ def populate_product_types(apps, schema_editor):
     product_types = []
     modelo = apps.get_model('ritualUS','producttype')
     for category in categories:
-        product_type = modelo.objects.create(name=f"Tipo de {category}", category=category)
+        product_type = modelo.objects.create(name=f"{category}", category=category)
         product_types.append(product_type)
     print("Tipos de productos creados correctamente.")
 
@@ -66,7 +66,7 @@ def populate_products(apps, schema_editor):
             description=f"Descripción del producto {i}",
             price=10.99 + (i * 2),
             stock=50,
-            image="https://www.google.com/imgres?q=imagen%20de%20vela%20&imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FCandle-flame-and-reflection.jpg%2F220px-Candle-flame-and-reflection.jpg&imgrefurl=https%3A%2F%2Fes.wiktionary.org%2Fwiki%2Fvela&docid=KjlShFDmHW40NM&tbnid=MktXLh8tjPL3uM&vet=12ahUKEwiozuvBmemJAxXbnP0HHQpaEIkQM3oECBgQAA..i&w=220&h=275&hcb=2&ved=2ahUKEwiozuvBmemJAxXbnP0HHQpaEIkQM3oECBgQAA",
+            image="vela.jpg",
             product_type=product_types.objects.get(id=i) # Alternar entre tipos de producto
         )
         products.append(product)

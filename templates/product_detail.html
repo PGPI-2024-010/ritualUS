@@ -23,7 +23,7 @@
         <p><strong>Departamento:</strong> {{ product.department }}</p>
         <p><strong>Sección:</strong> {{ product.section }}</p>
         <p><strong>Fábrica:</strong> {{ product.factory }}</p>
-        <p><strong>Categoría:</strong> {{ product.product_type.category }}</p>
+        <p><strong>Categoría:</strong> {{ product.product_type }}</p>
         
         {% if product.is_available %}
         <div class="action-row">
@@ -35,6 +35,48 @@
         {% else %}
             <p class="out-of-stock">Producto Agotado</p>
         {% endif %}
+    </div>
+</section>
+
+<!-- Productos Recomendados -->
+<section class="recommended-products">
+    <h2>Productos Recomendados</h2>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            {% if recommended_products %}
+                {% for recommended_product in recommended_products %}
+                    {% if recommended_product.is_available %}
+                        <div class="swiper-slide">
+                            <div class="product-card">
+                                <a href="{{ recommended_product.get_absolute_url }}">
+                                    <img src="{{ recommended_product.image.url }}" alt="{{ recommended_product.name }}">
+                                </a>
+                                <h3>{{ recommended_product.name }}</h3>
+                                <p class="price">
+                                    {% if recommended_product.discount_price %}
+                                    <span class="discount-price">{{ recommended_product.discount_price }} €</span>
+                                    <span class="original-price">{{ recommended_product.price }} €</span>
+                                    {% else %}
+                                    {{ recommended_product.price }} €
+                                    {% endif %}
+                                </p>
+                                <a href="{{ recommended_product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No hay productos recomendados.</p>
+            {% endif %}
+        </div>
+        <!-- Controles del carrusel -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+
+        
     </div>
 </section>
 {% endblock %}

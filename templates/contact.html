@@ -3,69 +3,179 @@
 
 {% block content %}
 <div class="contact-container">
-    <!-- Logo central -->
+    <!-- Logo Central -->
     <div class="logo-center">
-        <img src="{% static 'images/logo.png' %}" alt="Logo de RitualUS" class="logo">
+        <img src="{% static 'images/logo.png' %}" alt="RitualUS Logo">
     </div>
     
-    <!-- Información de contacto -->
+    <!-- Título de la Página -->
+    <h1>Contáctanos</h1>
+    
+    <!-- Información de Contacto -->
     <div class="contact-info">
-        <h1>Contáctanos</h1>
-        <p><strong>Correo electrónico:</strong> contacto@ritualus.com</p>
-        <p><strong>Teléfono:</strong> +34 123 456 789</p>
-        <p><strong>Registrate y accede a nuestras redes sociales en:</strong></p>
+        <h2>Información de Contacto</h2>
+        <p>Estamos aquí para ayudarte. Si tienes preguntas, sugerencias o necesitas más información sobre nuestros productos, no dudes en contactarnos a través de los siguientes medios:</p>
+        <ul>
+            <li><strong>Correo Electrónico:</strong> <a href="mailto:info@ritualus.com">info@ritualus.com</a></li>
+            <li><strong>Teléfono:</strong> +34 123 456 789</li>
+            <li><strong>Dirección:</strong> Calle Esotérica, 42, 28013 Madrid, España</li>
+        </ul>
+    </div>
+    
+    <!-- Redes Sociales -->
+    <div class="social-media">
+        <h2>Encuéntranos en Redes Sociales</h2>
+        <p>Regístrate y síguenos para estar al día con nuestras últimas noticias y productos:</p>
         <ul>
             <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+            <li><a href="https://www.instagram.com" target="_blank">Instagram</a></li>
             <li><a href="https://twitter.com" target="_blank">Twitter</a></li>
-            <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
         </ul>
+    </div>
+    
+    <!-- Formulario de Contacto -->
+    <div class="contact-form">
+        <h2>Envíanos un Mensaje</h2>
+        <form action="{% url 'contact' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Nombre:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Mensaje:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Enviar</button>
+        </form>
     </div>
 </div>
 
-<!-- Estilos adicionales -->
+<!-- Estilos -->
 <style>
 .contact-container {
-    text-align: center;
+    max-width: 900px;
     margin: 50px auto;
+    padding: 20px;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    text-align: center;
 }
 
 .logo-center img {
     max-width: 200px;
     height: auto;
+    margin-bottom: 30px;
+}
+
+.contact-container h1 {
+    font-size: 3rem;
     margin-bottom: 20px;
+    color: #444;
 }
 
-.contact-info {
-    margin-top: 20px;
-}
-
-.contact-info h1 {
-    font-size: 2.5rem;
+.contact-info p, .social-media p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 15px 0;
     color: #000000;
+
 }
 
-.contact-info p {
-    font-size: 1.2rem;
-    margin: 20px 0;
+.contact-info, .social-media, .contact-form {
+    margin-top: 40px;
+    text-align: left;
     color: #000000;
+
 }
 
-.contact-info ul {
-    list-style: none;
+.contact-info h2, .social-media h2, .contact-form h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #555;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.contact-info ul, .social-media ul {
+    list-style-type: none;
     padding: 0;
+    margin: 0;
+    color: #444;
+
 }
 
-.contact-info ul li {
-    margin: 5px 0;
+.contact-info ul li, .social-media ul li {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    color: #444;
+
 }
 
-.contact-info ul li a {
+.contact-info a, .social-media a {
     color: #007bff;
     text-decoration: none;
 }
 
-.contact-info ul li a:hover {
+.contact-info a:hover, .social-media a:hover {
     text-decoration: underline;
+    
+}
+
+.contact-form form {
+    margin-top: 20px;
+}
+
+.contact-form .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.contact-form label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.contact-form .submit-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.contact-form .submit-btn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .contact-container {
+        padding: 10px;
+    }
+    
+    .contact-container h1 {
+        font-size: 2.5rem;
+    }
+    
+    .contact-info h2, .social-media h2, .contact-form h2 {
+        font-size: 1.8rem;
+    }
 }
 </style>
 {% endblock %}

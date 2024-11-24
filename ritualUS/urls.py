@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from .views import Home, profile_view, ProductListView, ProductDetailView, contact
+from .views import Home, profile_view, ProductListView, ProductDetailView, contact, about
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('products/', ProductListView.as_view(), name='products'),
     path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('contact/', contact, name='contact'),
+    path('about/', about, name='about'), 
 ]
 
 if settings.DEBUG:

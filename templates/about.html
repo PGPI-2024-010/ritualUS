@@ -1,0 +1,151 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="about-container">
+    <!-- Logo central -->
+    <div class="logo-center">
+        <img src="{% static 'images/logo.png' %}" alt="RitualUS Logo">
+    </div>
+    
+    <!-- Información detallada sobre RitualUS -->
+    <div class="about-info">
+        <h1>Sobre RitualUS</h1>
+        
+        <!-- Sección de Introducción -->
+        <section class="introduction">
+            <p>En RitualUS, nos apasiona conectar a las personas con la sabiduría y las tradiciones esotéricas de todo el mundo. Nuestra misión es ofrecer una amplia gama de productos esotéricos que promuevan el bienestar espiritual, físico y emocional de nuestros clientes.</p>
+        </section>
+        
+        <!-- Sección de Misión y Visión -->
+        <section class="mission-vision">
+            <div class="mission">
+                <h2>Misión</h2>
+                <p>Proveer productos esotéricos de alta calidad que faciliten el crecimiento personal y espiritual, respetando y valorando las tradiciones ancestrales de diversas culturas.</p>
+            </div>
+            <div class="vision">
+                <h2>Visión</h2>
+                <p>Ser líderes en el mercado de productos esotéricos a nivel mundial, creando una comunidad global que comparte y celebra el conocimiento esotérico.</p>
+            </div>
+        </section>
+        
+        <!-- Sección de Historia -->
+        <section class="history">
+            <h2>Nuestra Historia</h2>
+            <p>RitualUS fue fundada en 2020 por un grupo de entusiastas del esoterismo que buscaban una plataforma confiable para adquirir productos auténticos y significativos. Desde entonces, hemos crecido para incluir una vasta selección de artículos provenientes de diversas partes del mundo, cada uno con su propia historia y propósito.</p>
+        </section>
+        
+        <!-- Sección de Productos -->
+        <section class="products">
+            <h2>Nuestros Productos</h2>
+            <p>Ofrecemos una variedad de productos esotéricos, incluyendo:</p>
+            <ul>
+                <li>Velas rituales de diferentes tamaños y aromas.</li>
+                <li>Amuletos y talismanes para protección y prosperidad.</li>
+                <li>Inciensos y sahumerios para purificación y meditación.</li>
+                <li>Accesorios para rituales, como cálices, pentáculos y más.</li>
+            </ul>
+            <p>Todos nuestros productos son seleccionados cuidadosamente para garantizar su autenticidad y eficacia.</p>
+        </section>
+        
+        <!-- Sección de Alcance Global -->
+        <section class="global-reach">
+            <h2>Alcance Global</h2>
+            <p>RitualUS se enorgullece de ofrecer productos de diversas culturas y tradiciones esotéricas de todo el mundo. Trabajamos directamente con artesanos y proveedores locales para asegurar que cada artículo mantenga su esencia original y calidad excepcional.</p>
+        </section>
+        
+        <!-- Sección de Compromiso con la Calidad -->
+        <section class="quality-commitment">
+            <h2>Compromiso con la Calidad</h2>
+            <p>Nuestro compromiso es proporcionar solo los mejores productos esotéricos. Realizamos rigurosos controles de calidad y trabajamos con proveedores que comparten nuestros valores de autenticidad y respeto por las tradiciones.</p>
+        </section>
+        
+        <!-- Sección de Comunidad -->
+        <section class="community">
+            <h2>Comunidad RitualUS</h2>
+            <p>Creemos en el poder de la comunidad y en la importancia de compartir conocimientos y experiencias. A través de nuestros canales de redes sociales y eventos especiales, fomentamos un espacio donde nuestros clientes pueden conectarse, aprender y crecer juntos.</p>
+        </section>
+        
+        <!-- Sección de Contacto Rápido -->
+        <section class="quick-contact">
+            <h2>¿Tienes Preguntas?</h2>
+            <p>No dudes en <a href="{% url 'contact' %}">contactarnos</a> para cualquier consulta o para obtener más información sobre nuestros productos y servicios.</p>
+        </section>
+    </div>
+</div>
+
+<!-- Estilos adicionales -->
+<style>
+.about-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+}
+
+.logo-center {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo-center img {
+    max-width: 250px;
+    height: auto;
+}
+
+.about-info h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.about-info h2 {
+    font-size: 2rem;
+    margin-top: 30px;
+    color: #555;
+    border-bottom: 2px solid #fa7407;
+    padding-bottom: 10px;
+}
+
+.about-info p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 15px 0;
+    color: #444;
+
+}
+
+.about-info ul {
+    list-style-type: disc;
+    margin-left: 40px;
+}
+
+.about-info ul li {
+    margin: 8px 0;
+}
+
+.about-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.about-info a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 10px;
+    }
+    
+    .about-info h1 {
+        font-size: 2.5rem;
+    }
+    
+    .about-info h2 {
+        font-size: 1.8rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView
-from .models import Product, Category
+from .models import Product, Category, Order, OrderProduct
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -51,3 +51,22 @@ class ProductListView(ListView):
         else:
             # Si no hay filtro, muestra todos los productos
             return Product.objects.all()
+
+def update_cart(request):
+    if request.method =='POST':
+        product_id = request.POST.get('product_id')
+        order_id = request.POST.get('order_id')
+        action = request.POST.get('action')
+        product = Product.objects.get(product_id)
+        order = Order.objects.get(order_id)
+        order_product = OrderProduct.objects.get_or_create(order=order,product=product)
+        if action == 'add':
+            order_product.quantity += 1
+            order_product.save()
+        elif action == 'remove':
+            order_product.quantity -= 1
+            if order_product.quantity <= 0:
+                order_product.delete()
+            else:
+                order_product.save()
+    return render(request, 'cart.html')

@@ -65,7 +65,8 @@ class Order(models.Model):
     id = models.AutoField(primary_key=True)
     date = models.DateField(auto_now_add=True)
     payment = models.CharField(max_length=100, choices=Payment.choices())
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="order")
 
 class OrderProduct(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product")

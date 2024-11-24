@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from .views import Home, profile_view, ProductListView
+from .views import Home, profile_view, ProductListView, update_cart
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('profile/', profile_view, name='profile'),
     path('products/', ProductListView.as_view(), name='products'),
+    path('cart/', update_cart, name='cart')
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,76 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+{% load category_template_tags %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-text">
+        <h1>Carrito</h1>
+    </div>
+</section>
+
+<!-- Contenido principal -->
+<section class="main-content">
+    <div class="container featured-products">
+        <!-- Barra lateral y contenido principal -->
+        <div style="display: flex; gap: 2rem;">
+            <!-- Barra lateral -->
+            <!-- Lista de productos -->
+            <div style="flex-grow: 1;">
+                <!-- Opciones de orden -->
+                <!-- Productos -->
+				<section class="featured-products">
+					<div class="products-grid">
+						{% for product in products %}
+						<div class="product-card">
+							<a href="{{ product.get_absolute_url }}">
+								<img src="{{ product.image.url }}" alt="{{ product.name }}">
+							</a>
+							<h3>{{ product.name }}</h3>
+							<p class="price">
+								{% if product.discount_price %}
+								<span class="discount-price">{{ product.discount_price }} €</span>
+								<span class="original-price">{{ product.price }} €</span>
+								{% else %}
+								{{ product.price }} €
+								{% endif %}
+							</p>
+							{% if product.is_available %}
+							<a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+							{% else %}
+							<p class="out-of-stock" style="color: red; font-weight: bold;">Producto Agotado</p>
+							{% endif %}
+						</div>
+						{% empty %}
+						<span>Tu carrito está vacío.</span>
+						{% endfor %}
+					</div>
+				</section>
+
+
+                <!-- Paginación -->
+				{% if is_paginated %}
+				<div class="pagination flex-m flex-w p-t-26">
+					{% if page_obj.has_previous %}
+					<a class="page-link" href="?page={{ page_obj.previous_page_number}}" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+						<span class="sr-only">Previous</span>
+					</a>
+					{% endif %}
+					<a href="?page={{ page_obj.number }}" class="item-pagination flex-c-m trans-0-4 active-pagination">{{page_obj.number}}</a>
+					
+					
+					{% if page_obj.has_next %}
+					<a class="page-link" href="?page={{ page_obj.next_page_number}}" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+							<span class="sr-only">Next</span>
+						</a>
+						{% endif %}
+				</div>
+				{% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

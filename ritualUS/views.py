@@ -1,5 +1,5 @@
 
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Product, Category, Order, OrderProduct
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
@@ -70,3 +70,16 @@ def update_cart(request):
             else:
                 order_product.save()
     return render(request, 'cart.html')
+        
+
+class ProductDetailView(DetailView):
+    template_name = 'product_detail.html' 
+    model = Product 
+    context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = context['product']
+        recommended_products = Product.objects.filter(product_type=product.product_type).exclude(id=product.id)[:9]
+        context['recommended_products'] = recommended_products
+        return context

@@ -44,6 +44,9 @@ class Product(models.Model):
     factory = models.CharField(max_length=100, blank=True, null=True)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE, related_name="product")
 
+    def get_absolute_url(self):
+        return reverse('product-detail', kwargs={'pk': self.id})
+
     @property
     def is_available(self):
         return self.stock > 0

@@ -1,0 +1,71 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="contact-container">
+    <!-- Logo central -->
+    <div class="logo-center">
+        <img src="{% static 'images/logo.png' %}" alt="Logo de RitualUS" class="logo">
+    </div>
+    
+    <!-- Información de contacto -->
+    <div class="contact-info">
+        <h1>Contáctanos</h1>
+        <p><strong>Correo electrónico:</strong> contacto@ritualus.com</p>
+        <p><strong>Teléfono:</strong> +34 123 456 789</p>
+        <p><strong>Registrate y accede a nuestras redes sociales en:</strong></p>
+        <ul>
+            <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+            <li><a href="https://twitter.com" target="_blank">Twitter</a></li>
+            <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Estilos adicionales -->
+<style>
+.contact-container {
+    text-align: center;
+    margin: 50px auto;
+}
+
+.logo-center img {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.contact-info {
+    margin-top: 20px;
+}
+
+.contact-info h1 {
+    font-size: 2.5rem;
+    color: #000000;
+}
+
+.contact-info p {
+    font-size: 1.2rem;
+    margin: 20px 0;
+    color: #000000;
+}
+
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-info ul li {
+    margin: 5px 0;
+}
+
+.contact-info ul li a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.contact-info ul li a:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

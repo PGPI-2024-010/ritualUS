@@ -64,3 +64,6 @@ class ProductDetailView(DetailView):
         recommended_products = Product.objects.filter(product_type=product.product_type).exclude(id=product.id)[:9]
         context['recommended_products'] = recommended_products
         return context
+    
+def contact(request):
+    return render(request, 'contact.html')

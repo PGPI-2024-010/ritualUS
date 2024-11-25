@@ -12,8 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -57,8 +61,10 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # Backend de autenticación predeterminado de Django
-    'allauth.account.auth_backends.AuthenticationBackend',  # Backend de autenticación de allauth
+    # Backend de autenticación predeterminado de Django
+    'django.contrib.auth.backends.ModelBackend',
+    # Backend de autenticación de allauth
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'ritualUS.urls'
@@ -78,8 +84,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 
 WSGI_APPLICATION = 'ritualUS.wsgi.application'
@@ -109,7 +113,7 @@ if ENVIRONMENT == 'production':
 
 
 ACCOUNT_FORMS = {
-    'signup': 'ritualUS.forms.CustomSignupForm', 
+    'signup': 'ritualUS.forms.CustomSignupForm',
 }
 
 # Password validation
@@ -160,6 +164,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
 LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
-ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Opcional: 'mandatory' o 'none' según prefieras
+# Opcional: 'mandatory' o 'none' según prefieras
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

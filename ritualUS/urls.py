@@ -28,7 +28,7 @@ urlpatterns = [
     path('products/', ProductListView.as_view(), name='products'),
     path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('contact/', contact, name='contact'),
-    path('about/', about, name='about'), 
+    path('about/', about, name='about'),
 ]
 
 if settings.DEBUG:

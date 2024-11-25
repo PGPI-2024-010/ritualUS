@@ -20,18 +20,19 @@ def populate_product_types(apps, schema_editor):
         Category.JEWELRY.value,
         Category.DECORATION.value,
     ]
-    
+
     product_types = []
-    modelo = apps.get_model('ritualUS','producttype')
+    modelo = apps.get_model('ritualUS', 'producttype')
     for category in categories:
-        product_type = modelo.objects.create(name=f"{category}", category=category)
+        product_type = modelo.objects.create(
+            name=f"{category}", category=category)
         product_types.append(product_type)
     print("Tipos de productos creados correctamente.")
 
 
 def populate_users(apps, schema_editor):
     users = []
-    modelo = apps.get_model('ritualUS','customuser')
+    modelo = apps.get_model('ritualUS', 'customuser')
     admin_user = modelo.objects.create_superuser(
         username='admin',
         password='admin123',
@@ -52,13 +53,13 @@ def populate_users(apps, schema_editor):
             dni=f'DNI{i}234'
         )
         users.append(user)
-    
+
     print("Usuarios creados correctamente.")
 
 
 def populate_products(apps, schema_editor):
     products = []
-    modelo = apps.get_model('ritualUS','product')
+    modelo = apps.get_model('ritualUS', 'product')
     product_types = apps.get_model('ritualUS', 'producttype')
     for i in range(1, 5):
         product = modelo.objects.create(
@@ -67,7 +68,8 @@ def populate_products(apps, schema_editor):
             price=10.99 + (i * 2),
             stock=50,
             image="vela.jpg",
-            product_type=product_types.objects.get(id=i) # Alternar entre tipos de producto
+            product_type=product_types.objects.get(
+                id=i)  # Alternar entre tipos de producto
         )
         products.append(product)
 
@@ -94,6 +96,7 @@ def populate_addresses(users):
     print("Direcciones creadas correctamente!")
 '''
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -111,7 +114,8 @@ class Migration(migrations.Migration):
                 ('discount_price', models.FloatField(blank=True, null=True)),
                 ('image', models.ImageField(blank=True, null=True, upload_to='')),
                 ('stock', models.IntegerField()),
-                ('department', models.CharField(blank=True, max_length=100, null=True)),
+                ('department', models.CharField(
+                    blank=True, max_length=100, null=True)),
                 ('section', models.CharField(blank=True, max_length=100, null=True)),
                 ('factory', models.CharField(blank=True, max_length=100, null=True)),
             ],
@@ -121,7 +125,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100)),
-                ('category', models.CharField(choices=[('candle', 'CANDLE'), ('aromatherapy', 'AROMATHERAPY'), ('jewelry', 'JEWELRY'), ('decoration', 'DECORATION')], default='candle', max_length=50)),
+                ('category', models.CharField(choices=[('candle', 'CANDLE'), ('aromatherapy', 'AROMATHERAPY'), (
+                    'jewelry', 'JEWELRY'), ('decoration', 'DECORATION')], default='candle', max_length=50)),
             ],
         ),
         migrations.AlterField(
@@ -139,7 +144,8 @@ class Migration(migrations.Migration):
                 ('street', models.CharField(max_length=100)),
                 ('number', models.IntegerField()),
                 ('apartment_number', models.CharField(max_length=50, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='address', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='address', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -147,24 +153,32 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('date', models.DateField(auto_now_add=True)),
-                ('payment', models.CharField(choices=[('cash', 'CASH'), ('credit card', 'CREDIT_CARD')], max_length=100)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order', to=settings.AUTH_USER_MODEL)),
+                ('payment', models.CharField(choices=[
+                 ('cash', 'CASH'), ('credit card', 'CREDIT_CARD')], max_length=100)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='order', to=settings.AUTH_USER_MODEL)),
+                ('address', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                              related_name='order', to='ritualUS.address')),
             ],
         ),
         migrations.CreateModel(
             name='OrderProduct',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.IntegerField()),
                 ('unity_price', models.FloatField()),
-                ('order_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order_product', to='ritualUS.order')),
-                ('product_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order_product', to='ritualUS.product')),
+                ('order_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='order_product', to='ritualUS.order')),
+                ('product_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='order_product', to='ritualUS.product')),
             ],
         ),
         migrations.AddField(
             model_name='product',
             name='product_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product', to='ritualUS.producttype'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='product', to='ritualUS.producttype'),
         ),
         migrations.RunPython(populate_product_types),
         migrations.RunPython(populate_users),

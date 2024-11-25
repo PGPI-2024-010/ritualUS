@@ -197,3 +197,11 @@ class PaymentView(View):
             return JsonResponse({
                 'error': str(e)  # Devolver el error si ocurre algún problema
             }, status=500)
+
+
+def contact(request):
+    return render(request, 'contact.html')
+
+
+def about(request):
+    return render(request, 'about.html')

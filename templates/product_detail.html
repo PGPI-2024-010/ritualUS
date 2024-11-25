@@ -29,6 +29,7 @@
         <div class="action-row">
             <div class="quantity-selector">
                 <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" data-max-stock="{{ product.stock }}">
+                
             </div>
             <a href="{{ product.get_add_to_cart_url }}"  id="addToCartBtn" data-add-to-cart-url="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
         </div>

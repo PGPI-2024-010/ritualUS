@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from .views import Home, profile_view, ProductListView, ProductDetailView
+from .views import Home, profile_view, ProductListView, ProductDetailView, PaymentView, PaymentSuccessView
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -27,6 +27,9 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('products/', ProductListView.as_view(), name='products'),
     path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
+    path('payment/<int:order_id>/', PaymentView.as_view(), name='payment'),
+    path('payment/success/<int:order_id>/',
+         PaymentSuccessView.as_view(), name='payment_success'),
 ]
 
 if settings.DEBUG:

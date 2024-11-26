@@ -81,7 +81,7 @@ class Address(models.Model):
     number = models.IntegerField()
     apartment_number = models.CharField(max_length=50, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name="address")
+                             on_delete=models.CASCADE, related_name="address", null=True)
 
 
 class Order(models.Model):

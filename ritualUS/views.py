@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order
+from .models import Product, Category, OrderProduct, Order, Address, Payment, ProductStatus
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import render
 from dotenv import load_dotenv
+from django.core.mail import send_mail
 load_dotenv()
 stripe.api_key = os.getenv('STRIPE_API_KEY')
 
@@ -70,7 +71,7 @@ def cart_view(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     cart_items = OrderProduct.objects.filter(order_id=order) if order else []
     cart_total = sum(item.unity_price * item.quantity for item in cart_items) if order else 0
     context = {
@@ -86,7 +87,7 @@ def update_cart(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product,
                                                                 defaults={'quantity':quantity,'unity_price':product.price,})
     order_product.quantity = quantity
@@ -100,10 +101,56 @@ def remove_from_cart(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product)
     order_product.delete()
     return redirect('cart')
+
+def order_confirmation_view(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+        email = request.user.email
+    else:
+        order, created = Order.objects.get_or_create(user=None, status='pending')
+        email = ""
+    cart_items = OrderProduct.objects.filter(order_id=order) if order else []
+    cart_total = sum(item.unity_price * item.quantity for item in cart_items) if order else 0
+    context = {
+        'email': email,
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'authenticated': request.user.is_authenticated,
+    }
+    return render(request, 'order_confirmation.html', context)
+
+def confirmed_order(request):
+    email = request.POST.get('email')
+    payment_method = request.POST.get('payment_method')
+    country = request.POST.get('country')
+    city = request.POST.get('city')
+    postal_code = request.POST.get('postal_code')
+    street = request.POST.get('street')
+    number = int(request.POST.get('number'))
+    apartment_number = request.POST.get('apartment_number', None)
+    address, created = Address.objects.get_or_create(
+        country=country, city=city, postal_code=postal_code, street=street, number=number, apartment_number=apartment_number)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+        address.user = request.user
+        address.save()
+    else:
+        order, created = Order.objects.get_or_create(user=None, status='pending')
+    order.address = address
+    send_mail(subject="Pedido realizado con éxito", message="¡Su pedido en RitualUS se ha realizado con éxito!",
+              from_email="info@ritualus.com", recipient_list=[email])
+    if payment_method == 'cash':
+        order.payment = 'cash'
+        order.status = 'confirmed'
+    elif payment_method == 'card':
+        order.payment == 'credit card'
+        order.status = 'confirmed'
+    order.save()
+    return redirect('home')
 
 class ProductDetailView(DetailView):
     template_name = 'product_detail.html'

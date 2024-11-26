@@ -1,18 +1,26 @@
 from django import forms
 from allauth.account.forms import SignupForm
-from .models import CustomUser
+from allauth.account.forms import LoginForm
+
+from ritualUS.models import CustomUser
 
 class CustomSignupForm(SignupForm):
-    name = forms.CharField(max_length=30, required=True)
-    surname = forms.CharField(max_length=30, required=True)
-    phone = forms.CharField(max_length=15, required=True)
-    DNI = forms.CharField(max_length=9, required=True)
+    first_name = forms.CharField(max_length=100, label="Nombre")
+    last_name = forms.CharField(max_length=100, label="Apellidos")
+    phone_number = forms.CharField(max_length=15, label="Número de Teléfono")
+    dni = forms.CharField(max_length=20, label="DNI")
+    
+    def clean_dni(self):
+        dni = self.cleaned_data.get('dni')
+        if CustomUser.objects.filter(dni=dni).exists():
+            raise forms.ValidationError("El DNI ya está registrado. Por favor, usa otro.")
+        return dni
 
     def save(self, request):
-        user = super().save(request)
-        user.first_name = self.cleaned_data['Name:']
-        user.last_name = self.cleaned_data['Surname:']
-        user.phone_number = self.cleaned_data['Phone:']
-        user.dni = self.cleaned_data['DNI:']
-        user.save()
+        user = super().save(request)  # El super ya guarda el usuario en la base de datos
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.phone_number = self.cleaned_data['phone_number']
+        user.dni = self.cleaned_data['dni']
+        user.save(update_fields=['first_name', 'last_name', 'phone_number', 'dni'])  # Solo actualiza campos    
         return user

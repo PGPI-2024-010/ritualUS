@@ -1,0 +1,73 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Iniciar sesión - Mi Proyecto{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+<body>
+
+    <!-- Contenido principal -->
+    <main class="container mt-5">
+        {% block content %}
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-content">
+                    <h2>Iniciar sesión</h2>
+                    <p>Accede a tu cuenta para continuar disfrutando de nuestros productos.</p>
+                        <form class="login" method="POST" action="{% url 'account_login' %}">
+                            {% csrf_token %}
+                            
+                            <!-- Campo de usuario o correo -->
+                            <div class="form-group">
+                              <label for="{{ form.login.id_for_label }}">Correo o Nombre de usuario</label>
+                              {{ form.login }}
+                              <div class="error-message">
+                                {% for error in form.login.errors %}
+                                  <p class="error">{{ error }}</p>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          
+                            <!-- Campo de contraseña -->
+                            <div class="form-group">
+                              <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                              {{ form.password }}
+                              <div class="error-message">
+                                {% for error in form.password.errors %}
+                                  <p class="error">{{ error }}</p>
+                                {% endfor %}
+                              </div>
+                            </div>
+                    
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </form>
+
+
+                    <div class="auth-footer">
+                        <p>¿No tienes una cuenta? <a href="{% url 'account_signup' %}">Regístrate aquí</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Mi Proyecto. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

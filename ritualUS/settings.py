@@ -12,12 +12,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-3qng-%*rfl!(*3(6_a0c@g=g+-99wu@++)10$d4fl)@gf2%c!z'
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,13 +31,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'ritualUS.CustomUser'
-#ACCOUNT_SIGNUP_FORM_CLASS = 'ritualUS.forms.CustomSignupForm'
 
 # Application definition
 
@@ -61,8 +61,10 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # Backend de autenticación predeterminado de Django
-    'allauth.account.auth_backends.AuthenticationBackend',  # Backend de autenticación de allauth
+    # Backend de autenticación predeterminado de Django
+    'django.contrib.auth.backends.ModelBackend',
+    # Backend de autenticación de allauth
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'ritualUS.urls'
@@ -82,8 +84,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 
 WSGI_APPLICATION = 'ritualUS.wsgi.application'
@@ -113,7 +113,7 @@ if ENVIRONMENT == 'production':
 
 
 ACCOUNT_FORMS = {
-    'signup': 'ritualUS.forms.CustomSignupForm',  # Sustituye 'miapp' por el nombre de tu aplicación
+    'signup': 'ritualUS.forms.CustomSignupForm',
 }
 
 # Password validation
@@ -152,6 +152,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'ritualUS/static']
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -160,7 +162,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'  # Redirección después de iniciar sesión
+LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registro
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Opcional: 'mandatory' o 'none' según prefieras
-
+# Opcional: 'mandatory' o 'none' según prefieras
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

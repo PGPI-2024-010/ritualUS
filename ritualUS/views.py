@@ -70,7 +70,7 @@ def cart_view(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     cart_items = OrderProduct.objects.filter(order_id=order) if order else []
     cart_total = sum(item.unity_price * item.quantity for item in cart_items) if order else 0
     context = {
@@ -86,7 +86,7 @@ def update_cart(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product,
                                                                 defaults={'quantity':quantity,'unity_price':product.price,})
     order_product.quantity = quantity
@@ -100,10 +100,27 @@ def remove_from_cart(request):
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(user=request.user, status='pending')
     else:
-        order, created = Order.objects.get_or_create(status='pending')
+        order, created = Order.objects.get_or_create(user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product)
     order_product.delete()
     return redirect('cart')
+
+def order_confirmation_view(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+        email = request.user.email
+    else:
+        order, created = Order.objects.get_or_create(user=None, status='pending')
+        email = ""
+    cart_items = OrderProduct.objects.filter(order_id=order) if order else []
+    cart_total = sum(item.unity_price * item.quantity for item in cart_items) if order else 0
+    context = {
+        'email': email,
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'authenticated': request.user.is_authenticated,
+    }
+    return render(request, 'order_confirmation.html', context)
 
 class ProductDetailView(DetailView):
     template_name = 'product_detail.html'

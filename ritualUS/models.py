@@ -23,6 +23,14 @@ class Category(Enum):
     def choices(enum):
         return [(i.value, i.name) for i in enum]
 
+class ProductStatus(Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    
+    @classmethod
+    def choices(enum):
+        return [(i.value, i.name) for i in enum]
+
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -69,13 +77,18 @@ class Order(models.Model):
     date = models.DateField(auto_now_add=True)
     payment = models.CharField(max_length=100, choices=Payment.choices())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="order")
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
+    status = models.CharField(max_length=50, choices=ProductStatus.choices(),default=ProductStatus.PENDING.value)
 
 class OrderProduct(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product")
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_product")
     quantity = models.IntegerField()
     unity_price = models.FloatField()
+    
+    @property
+    def order_product_price(self):
+        return self.quantity*self.unity_price
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=False, null=False)

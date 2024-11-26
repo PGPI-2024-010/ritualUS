@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from .views import Home, profile_view, ProductListView, ProductDetailView, contact, about, update_cart
+from .views import Home, profile_view, ProductListView, ProductDetailView, contact, about, update_cart, cart_view, remove_from_cart
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
@@ -26,7 +26,9 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('profile/', profile_view, name='profile'),
     path('products/', ProductListView.as_view(), name='products'),
-    path('cart/', update_cart, name='cart'),
+    path('cart/', cart_view, name='cart'),
+    path('cart/update/', update_cart, name='update_cart'),
+    path('cart/remove_product/', remove_from_cart, name='remove_from_cart'),
     path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('contact/', contact, name='contact'),
     path('about/', about, name='about'), 

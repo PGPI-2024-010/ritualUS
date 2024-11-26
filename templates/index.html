@@ -87,7 +87,7 @@
                         {% endif %}
                     </p>
                 </a>
-                <a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+                <a href="{% url 'update_cart' %}?product_id={{ product.id }}&quantity=1" class="btn btn-add-cart">Agregar al Carrito</a>
             </div>
             {% empty %}
             <span>No hay productos destacados en este momento.</span>

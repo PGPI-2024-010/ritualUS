@@ -35,7 +35,7 @@
                 {% endfor %}
             </div>
             <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span></h3>
-            <form method="POST">
+            <form method="POST" action="{% url 'confirmed_order' %}">
                 <body>Se enviará un correo de confirmación a la siguiente dirección:</body>
                 {% if authenticated %}
                 <li><strong>Email:</strong> {{ email }}</li>

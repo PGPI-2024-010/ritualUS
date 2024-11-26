@@ -29,8 +29,8 @@ urlpatterns = [
     path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('contact/', contact, name='contact'),
     path('about/', about, name='about'),
-    path('payment/<int:order_id>', PaymentView.as_view(), name='payment'),
-    path('payment/success/',
+    path('payment/<int:order_id>/', PaymentView.as_view(), name='payment'),
+    path('payment/success/<int:order_id>/',
          PaymentSuccessView.as_view(), name='payment_success'),]
 
 if settings.DEBUG:

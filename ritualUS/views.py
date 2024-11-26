@@ -66,6 +66,44 @@ class ProductListView(ListView):
             # Si no hay filtro, muestra todos los productos
             return Product.objects.all()
 
+def cart_view(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(status='pending')
+    cart_items = OrderProduct.objects.filter(order_id=order) if order else []
+    cart_total = sum(item.unity_price * item.quantity for item in cart_items) if order else 0
+    context = {
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+    }
+    return render(request, 'cart.html', context)
+
+def update_cart(request):
+    product_id = request.GET.get('product_id')
+    quantity = int(request.GET.get('quantity', 1))
+    product = Product.objects.get(id=product_id)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(status='pending')
+    order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product,
+                                                                defaults={'quantity':quantity,'unity_price':product.price,})
+    order_product.quantity = quantity
+    order_product.unity_price = product.price
+    order_product.save()
+    return redirect('cart')
+
+def remove_from_cart(request):
+    product_id = request.GET.get('product_id')
+    product = Product.objects.get(id=product_id)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(status='pending')
+    order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product)
+    order_product.delete()
+    return redirect('cart')
 
 class ProductDetailView(DetailView):
     template_name = 'product_detail.html'

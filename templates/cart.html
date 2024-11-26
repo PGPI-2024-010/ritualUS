@@ -1,0 +1,55 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-text">
+        <h1>Carrito</h1>
+    </div>
+</section>
+
+<!-- Contenido principal -->
+<section class="main-content">
+    <div class="container featured-products">
+        <!-- Lista de productos en el carrito -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Verificar si hay productos en el carrito -->
+            {% if cart_items %}
+            <div class="products-grid">
+                {% for item in cart_items %}
+                <div class="product-card">
+                    <img src="{{ item.product_id.image.url }}" alt="{{ item.product.name }}">
+                    <div class="product-details">
+                        <h3>{{ item.product_id.name }}</h3>
+                        <p class="price">
+                            Precio unitario: {{ item.unity_price|floatformat:2 }} €
+                        </p>
+                        <p class="price">
+                            Cantidad:
+                            <form action="{% url 'update_cart' %}?product_id={{ item.product_id.id }}&quantity=quantity" method="GET">
+                                <input type="number" id="quantity" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product_id.stock }}" data-max-stock="{{ product.stock }}">
+                                <input type="hidden" name="product_id" value="{{ item.product_id.id }}">
+                                <button type="submit" class="btn btn-update-quantity">Actualizar</button>
+                            </form>
+                        </p>
+                        <p class="price">
+                            Total: {{ item.order_product_price|floatformat:2 }} €
+                        </p>
+                        <form method="POST" action="{% url 'remove_from_cart'%}?product_id={{ item.product_id.id }}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-remove">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span></h3>
+            <a href="{% url 'products' %}" class="btn btn-checkout">Ir a Pagar</a>
+            {% else %}
+            <body>Tu carrito está vacío. <a href="{% url 'products' %}">Volver a la tienda</a></body>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

@@ -47,6 +47,7 @@
                 <li><a href="/about/">Nosotros</a></li>
                 <li><a href="/contact/">Contacto</a></li>
                 <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+                <li><a href="/order_tracking/">Seguimiento de pedido</a></li>
                 {% if user.is_authenticated %}
                 <!-- Si el usuario está autenticado, muestra "Mi perfil" -->
                 <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
@@ -66,7 +67,6 @@
             <h2>Ilumina tu espíritu, expande tu poder</h2>
             <p>Encuentra los mejores productos a precios increíbles</p>
             <a href="/products/" class="btn btn-primary">Explorar Productos</a>
-            <a href="{% url 'payment' order_id=1 %}" class="btn btn-add-cart">Pagar</a>
 
         </div>
     </section>

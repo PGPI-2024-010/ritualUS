@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from .views import Home, profile_view, ProductListView, ProductDetailView, contact, about, update_cart, cart_view, remove_from_cart, PaymentSuccessView, PaymentView, order_confirmation_view, confirmed_order
+from .views import Home, profile_view, ProductListView, ProductDetailView, contact, about, update_cart, cart_view, remove_from_cart, PaymentSuccessView, PaymentView, order_confirmation_view, confirmed_order, order_tracking_view
 
 
 urlpatterns = [
@@ -36,9 +36,11 @@ urlpatterns = [
     path('payment/<int:order_id>/', PaymentView.as_view(), name='payment'),
     path('payment/success/<int:order_id>/',
          PaymentSuccessView.as_view(), name='payment_success'),
-    path('order_confirmation/', order_confirmation_view, name='order_confirmation_view'),
+    path('order_confirmation/', order_confirmation_view,
+         name='order_confirmation_view'),
     path('corfirmed_order/', confirmed_order, name='confirmed_order'),
-    ]
+    path('order_tracking/', order_tracking_view, name='order_tracking'),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,

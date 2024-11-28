@@ -167,6 +167,7 @@ def confirmed_order(request):
     elif payment_method == 'card':
         order.payment == 'credit card'
         order.status = 'confirmed'
+        order.save()
         return redirect('payment', order_id=order.id)
     order.save()
     return redirect('home')
@@ -226,7 +227,8 @@ class PaymentView(View):
     def get(self, request, order_id):
         # Obtener los productos asociados al pedido
         order_products = OrderProduct.objects.filter(order_id=order_id)
-        address = Order.objects.get(id=order_id).address
+        order = Order.objects.get(id=order_id)
+        address = order.address
         # Inicializar una lista para los productos con su información
         products = []
         total_price = 0
@@ -312,5 +314,15 @@ def about(request):
     return render(request, 'about.html')
 
 
-def order_traking_view(request):
-    return render(request, 'order_tracking.html')
+def order_tracking_view(request):
+    order = None
+    order_products = None
+    if request.GET.get('order_id'):
+        order_id = request.GET['order_id']
+        try:
+            order = Order.objects.get(id=order_id, user_id=request.user.id)
+            order_products = OrderProduct.objects.filter(order_id=order)
+        except Order.DoesNotExist:
+            order = None
+            order_products = None
+    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})

@@ -1,11 +1,154 @@
 {% extends 'base_generic.html' %}
 {% load static %}
+{% load category_template_tags %}
 
 {% block content %}
-<div class="about-container">
-    <div class="logo-center">
-        <img src="{% static 'images/logo.png' %}" alt="RitualUS Logo">
-</div>
 
+<!-- Estilos CSS dentro del HTML -->
+<style>
+    /* Formulario de búsqueda */
+    .order-search-form {
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-{% endblock %}
+    .order-search-form label {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .order-search-form input {
+        padding: 0.5rem;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .order-search-form button {
+        padding: 0.7rem 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .order-search-form button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Resumen de pedido */
+    .order-summary-container {
+        margin: 2rem 0;
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-details {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .order-details li {
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    /* Resumen de productos */
+    .order-products-container {
+        margin: 2rem 0;
+    }
+
+    .products-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .product-item {
+        flex: 1 1 45%;
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-item span {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-name {
+        font-weight: bold;
+    }
+
+    .product-price {
+        color: #28a745;
+    }
+
+    .product-discount {
+        color: #dc3545;
+    }
+
+    .product-quantity {
+        font-style: italic;
+        color: #6c757d;
+    }
+</style>
+
+<!-- Sección de búsqueda de pedido -->
+<section class="hero">
+    <div class="hero-text">
+        <h1>Buscar Pedido</h1>
+        <form method="get" action="{% url 'order_tracking' %}" class="order-search-form">
+            <label for="order_id">Número de pedido:</label>
+            <input type="text" id="order_id" name="order_id" required placeholder="Ingresa tu número de pedido">
+            <button type="submit">Buscar Pedido</button>
+        </form>
+    </div>
+</section>
+
+<!-- Si el pedido existe, se muestran los detalles -->
+{% if order %}
+<section class="order-summary">
+    <div class="order-summary-container">
+        <h2>Resumen de datos de entrega</h2>
+        <ul class="order-details">
+            <li><strong>Número de pedido:</strong> {{ order.id }}</li>
+            <li><strong>Nombre:</strong> {{ order.user.first_name }} {{ order.user.last_name }}</li>
+            <li><strong>Dirección completa:</strong> {{ order.address.street }} {{ order.address.number }} - {{ order.address.city }}, {{ order.address.country }} - Código Postal: {{ order.address.postal_code }}</li>
+            <li><strong>Estado de pedido:</strong> {{ order.status }}</li>
+        </ul>
+    </div>
+</section>
+
+<!-- Resumen de los productos en el pedido -->
+<section class="order-products">
+    <div class="order-products-container">
+        <h2>Resumen del pedido</h2>
+        <div class="products-grid">
+            <ul>
+                {% for item in order_products %}
+                    <li class="product-item">
+                        <span class="product-name">{{ item.product_id.name }}</span> - 
+                        <span class="product-price">€{{ item.product_id.price|floatformat:2 }}</span>
+                        {% if item.product_id.discount_price %}
+                            <span class="product-discount">(Descuento: €{{ item.product_id.discount_price|floatformat:2 }})</span>
+                        {% endif %}
+                        <span class="product-quantity">x {{ item.quantity }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock content %}

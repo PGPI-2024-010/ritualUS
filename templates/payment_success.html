@@ -1,51 +1,121 @@
 {% extends 'base_generic.html' %}
 {% load static %}
 {% load category_template_tags %}
-
 {% block content %}
+    <style>
+        /* Estilo general */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
 
+        .hero {
+            background-color: #28a745;
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .hero-text h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Sección de resumen */
+        section {
+            padding: 2rem 1rem;
+            margin: 2rem 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .hero-text li {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text strong {
+            font-weight: bold;
+        }
+
+        /* Enlace de vuelta al inicio */
+        .hero-text a {
+            font-size: 1.1rem;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .hero-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
     <section class="hero">
         <div class="hero-text">
-            <h1>Pedido realizado con exito!</h1>
-            Muchas gracias por su confianza, ¡esperamos verle pronto!
-
+            <h1>Pedido realizado con éxito</h1>
+            <p>Muchas gracias por su confianza, ¡esperamos verle pronto!</p>
         </div>
     </section>
+
+    <!-- Resumen de datos de entrega -->
     <section>
         <div class="hero-text">
+            <h2>Resumen de datos de entrega</h2>
             <ul>
-                <h2>
-                    Resumen de datos de entrega
-                </h2>
-                <!-- Mostrar el número de pedido -->
                 <li><strong>Número de pedido:</strong> {{ order.id }}</li>
-                <!-- Mostrar el nombre del usuario -->
                 <li><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</li>
-                <!-- Dirección de entrega -->
-                <li><strong>Dirección completa:</strong> {{ order.address.street }} {{ order.address.number }} - {{ order.address.city }}, {{ order.address.country }} - Código Postal: {{ order.address.postal_code }}</li>
-                <br>
-                <!-- Resumen de productos comprados -->
-                <h2>Resumen depedido:</h2>
-                    {% for item in order_products %}
-                        <li>
-                            <!-- Mostrar nombre del producto y precio -->
-                            {{ item.product_id.name }} - €{{ item.product_id.price|floatformat:2 }}
-        
-                            <!-- Verificar si hay un precio con descuento -->
-                            {% if item.product_id.discount_price %}
-                                (Descuento: €{{ item.product_id.discount_price|floatformat:2 }})
-                            {% endif %}
-        
-                            <!-- Mostrar la cantidad de productos -->
-                            x {{ item.quantity }}
-                        </li>
-                    {% endfor %}
-                <li><strong>Precio total:</strong> {{ total_price|floatformat:2}} €</li>
-                <li><a href="{% url 'home' %}">Volver al inicio</a></li>
-
+                <li><strong>Dirección completa:</strong> 
+                    {{ order.address.street }} {{ order.address.number }} - 
+                    {{ order.address.city }}, {{ order.address.country }} - 
+                    Código Postal: {{ order.address.postal_code }}
+                </li>
             </ul>
         </div>
-        
+    </section>
+
+    <!-- Resumen del pedido -->
+    <section>
+        <div class="hero-text">
+            <h2>Resumen del pedido</h2>
+            <ul>
+                {% for item in order_products %}
+                    <li>
+                        <strong>{{ item.product_id.name }}</strong> - €{{ item.product_id.price|floatformat:2 }}
+                        {% if item.product_id.discount_price %}
+                            (Descuento: €{{ item.product_id.discount_price|floatformat:2 }})
+                        {% endif %}
+                        x {{ item.quantity }}
+                    </li>
+                {% endfor %}
+                <li><strong>Precio total:</strong> €{{ total_price|floatformat:2 }}</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Enlace para volver al inicio -->
+    <section>
+        <div class="hero-text">
+            <a href="{% url 'home' %}"><strong>Volver al inicio</strong></a>
+        </div>
     </section>
 
 {% endblock content %}

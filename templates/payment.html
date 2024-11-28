@@ -1,161 +1,8 @@
+{% extends 'base_generic.html' %}
 {% load static %}
+{% load category_template_tags %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <style>
-        @font-face {
-            font-family: 'Montserrat-Regular';
-            src: url("{% static 'fonts/Montserrat-Regular.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Medium';
-            src: url("{% static 'fonts/Montserrat-Medium.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Bold';
-            src: url("{% static 'fonts/Montserrat-Bold.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Italic';
-            src: url("{% static 'fonts/Montserrat-Italic.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Black';
-            src: url("{% static 'fonts/Montserrat-Black.ttf' %}") format('truetype');
-        }
-
-        /* Aquí empieza el estilo del navbar */
-        body {
-            font-family: 'Montserrat-Regular', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .navbar {
-            background-color: #333;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-        }
-
-        .navbar .nav-links {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .navbar .nav-links li {
-            display: inline;
-            margin-left: 20px;
-        }
-
-        .navbar .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: normal;
-        }
-
-        .hero {
-            background: #f4f4f4;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .hero h1, .hero h2 {
-            font-family: 'Montserrat-Bold';
-        }
-
-        .hero-text {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .btn {
-            background-color: #4CAF50;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .social-links li {
-            display: inline;
-            margin-left: 10px;
-        }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .social-links i {
-            font-size: 18px;
-        }
-
-        .product-card {
-            border: 1px solid #ccc;
-            margin: 20px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .product-card img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RitualUS - Pago</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <a href="/" class="logo">RitualUS</a>
-            <ul class="nav-links">
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/products/">Productos</a></li>
-                <li><a href="/about/">Nosotros</a></li>
-                <li><a href="/contact/">Contacto</a></li>
-                <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
-                {% else %}
-                <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
-
+{% block content %}
     <!-- Resumen de pago -->
     <section class="hero">
         <div class="hero-text">
@@ -187,15 +34,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 RitualUS. Todos los derechos reservados.</p>
-        <ul class="social-links">
-            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-        </ul>
-    </footer>
+   
 
     <!-- Cargar Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
@@ -231,3 +70,5 @@
 
 </body>
 </html>
+
+{% endblock content %}

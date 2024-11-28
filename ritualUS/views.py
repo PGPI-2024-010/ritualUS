@@ -14,8 +14,8 @@ from django.views import View
 from django.shortcuts import render
 from dotenv import load_dotenv
 from django.core.mail import send_mail
-load_dotenv()
-stripe.api_key = os.getenv('STRIPE_API_KEY')
+
+stripe.api_key = settings.STRIPE_API_KEY
 
 
 class Home(ListView):
@@ -225,40 +225,35 @@ class PaymentSuccessView(View):
 
 class PaymentView(View):
     def get(self, request, order_id):
-        # Obtener los productos asociados al pedido
         order_products = OrderProduct.objects.filter(order_id=order_id)
         order = Order.objects.get(id=order_id)
         address = order.address
-        # Inicializar una lista para los productos con su información
         products = []
         total_price = 0
 
         for item in order_products:
-            product = item.product_id  # Acceder al producto relacionado con OrderProduct
+            product = item.product_id
             if product.discount_price:
-                # Calcular el precio total con descuento
                 total_price += product.discount_price * item.quantity
             else:
-                total_price += product.price * item.quantity  # Calcular el precio total
+                total_price += product.price * item.quantity
 
-            # Añadir el producto a la lista
             products.append({
                 'name': product.name,
                 'price': product.price,
-                'discount_price': product.discount_price,  # Si tiene descuento
+                'discount_price': product.discount_price,
                 'quantity': item.quantity,
                 'address': address,
             })
 
-        # Crear un PaymentIntent de Stripe
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),  # Convertir a centavos
+            amount=int(total_price * 100),
             currency='eur',
             description='Pago de productos'
         )
 
         return render(request, 'payment.html', {
-            'order_products': order_products,  # Pasa los productos con los detalles
+            'order_products': order_products,
             'total_price': total_price,
             'client_secret': payment_intent.client_secret,
             'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY,
@@ -271,38 +266,33 @@ class PaymentView(View):
         total_amount = 0
         line_items = []
         for item in cart_items:
-            # Obtener el producto de la base de datos
             product = Product.objects.get(id=item['product_id'])
-            # Calcular el precio total por producto
             total_amount += product.price * item['quantity']
             line_items.append({
                 'price_data': {
                     'currency': 'eur',
                     'product_data': {
-                        'name': product.name,  # Nombre del producto
+                        'name': product.name,
                     },
-                    # Precio en centavos (Stripe usa centavos)
                     'unit_amount': product.price * 100,
                 },
-                # Cantidad de este producto en el carrito
                 'quantity': item['quantity'],
             })
 
         try:
-            # Crear la sesión de pago de Stripe con el total calculado
             checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],  # Aceptar pagos con tarjeta
-                line_items=line_items,  # Los productos que el usuario va a pagar
-                mode='payment',  # Modo de pago único
-                success_url='http://localhost:8000/success',  # URL de éxito
-                cancel_url='http://localhost:8000/cancel',    # URL de cancelación
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                success_url='http://localhost:8000/success',
+                cancel_url='http://localhost:8000/cancel',
             )
             return JsonResponse({
-                'id': checkout_session.id  # Regresar el ID de la sesión para redirigir al frontend
+                'id': checkout_session.id
             })
         except Exception as e:
             return JsonResponse({
-                'error': str(e)  # Devolver el error si ocurre algún problema
+                'error': str(e)
             }, status=500)
 
 

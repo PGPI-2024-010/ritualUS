@@ -164,7 +164,7 @@ def confirmed_order(request):
     if payment_method == 'cash':
         order.payment = 'cash'
         order.status = 'confirmed'
-    elif payment_method == 'credit card':
+    elif payment_method == 'card':
         order.payment = 'credit card'
         order.status = 'confirmed'
         order.save()

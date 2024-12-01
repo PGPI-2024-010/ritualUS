@@ -167,3 +167,4 @@ ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registr
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

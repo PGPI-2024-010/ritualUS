@@ -10,6 +10,17 @@
     
     <!-- Título de la Página -->
     <h1>Contáctanos</h1>
+
+    <!-- Mensajes Flash -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     
     <!-- Información de Contacto -->
     <div class="contact-info">

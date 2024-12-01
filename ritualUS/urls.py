@@ -38,7 +38,7 @@ urlpatterns = [
          PaymentSuccessView.as_view(), name='payment_success'),
     path('order_confirmation/', order_confirmation_view,
          name='order_confirmation_view'),
-    path('corfirmed_order/', confirmed_order, name='confirmed_order'),
+    path('confirmed_order/', confirmed_order, name='confirmed_order'),
     path('order_tracking/', order_tracking_view, name='order_tracking'),
 ]
 

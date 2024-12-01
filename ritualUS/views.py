@@ -155,11 +155,39 @@ def confirmed_order(request):
             user=request.user, status='pending')
         address.user = request.user
         address.save()
+        first_name = request.user.first_name
+        last_name = request.user.last_name
     else:
         order, created = Order.objects.get_or_create(
             user=None, status='pending')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+
     order.address = address
-    send_mail(subject="Pedido realizado con éxito", message="¡Su pedido en RitualUS se ha realizado con éxito!",
+    request.session['first_name'] = first_name
+    request.session['last_name'] = last_name
+    subject = "Pedido realizado con éxito"
+    message = f"""
+    Estimado {first_name} {last_name},
+
+    ¡Gracias por tu compra en RitualUS! Tu pedido ha sido confirmado.
+
+    Detalles del Pedido:
+    Número de Pedido: {order.id}
+    Dirección de Entrega: {address.street} {address.number}, {address.city}, {address.country}, Código Postal: {address.postal_code}
+
+    Método de pago: {payment_method}
+    """
+
+    for order_product in order.order_product.all():
+        product = order_product.product_id
+        message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
+    
+    total_price = sum(product.quantity * product.unity_price for product in order.order_product.all())
+    message += f"\nTotal: {total_price}€"
+
+    send_mail(subject=subject, message=message,
               from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
@@ -170,7 +198,7 @@ def confirmed_order(request):
         order.save()
         return redirect('payment', order_id=order.id)
     order.save()
-    return redirect('home')
+    return redirect(f'/payment/success/{order.id}/')
 
 
 class ProductDetailView(DetailView):
@@ -220,7 +248,15 @@ class PaymentSuccessView(View):
                 total_price += product.product_id.discount_price * product.quantity
             else:
                 total_price += product.product_id.price * product.quantity
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'user': user})
+
+        if user.is_authenticated:
+            first_name = user.first_name
+            last_name = user.last_name
+        else:
+            first_name = request.session.get('first_name', 'Desconocido')
+            last_name = request.session.get('last_name', 'Desconocido')
+
+        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name':first_name, 'last_name':last_name})
 
 
 class PaymentView(View):

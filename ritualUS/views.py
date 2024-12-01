@@ -160,7 +160,7 @@ def confirmed_order(request):
             user=None, status='pending')
     order.address = address
     send_mail(subject="Pedido realizado con éxito", message="¡Su pedido en RitualUS se ha realizado con éxito!",
-              from_email="info@ritualus.com", recipient_list=[email])
+              from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
         order.status = 'confirmed'

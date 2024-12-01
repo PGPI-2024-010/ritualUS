@@ -297,32 +297,35 @@ class PaymentView(View):
 
 
 def contact(request):
-    return render(request, 'contact.html')
-
-def contact_view(request):
     if request.method == 'POST':
+    # Se capturan los datos del formulario
         name = request.POST.get('name')
         email = request.POST.get('email')
         message = request.POST.get('message')
 
-        # Correo enviado a la empresa
+        # Se prepara el correo para la empresa
         subject_to_company = f"Nuevo mensaje de contacto de {name}"
         message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
-        recipient_list_company = ['info@ritualus.com']
+        recipient_list_company = ['ritualusinfo@gmail.com']
 
-        # Correo de confirmación al usuario
+        # Se prepara el correo de confirmación para el usuario
         subject_to_user = "Confirmación de tu mensaje en RitualUS"
         message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
         recipient_list_user = [email]
 
         try:
-            # Enviar ambos correos
-            send_mail(subject_to_company, message_to_company, 'info@ritualus.com', recipient_list_company)
-            send_mail(subject_to_user, message_to_user, 'info@ritualus.com', recipient_list_user)
-            messages.success(request, '¡Tu mensaje ha sido enviado exitosamente! Revisa tu correo para una confirmación.')
+            # Se envían los correos (aparecerá en la consola)
+            send_mail(subject_to_company, message_to_company, 'ritualusinfo@gmail.com', recipient_list_company)
+            send_mail(subject_to_user, message_to_user, 'ritualusinfo@gmail.com', recipient_list_user)
+            # Si tiene éxito:
+            messages.success(request, '¡Tu mensaje ha sido enviado exitosamente! Revisa la consola para simular el envío de correos.')
         except Exception as e:
+            # Si ocurre un error:
             messages.error(request, f'Ocurrió un error al enviar tu mensaje: {e}')
-        return redirect('contact')
+
+        # Se redirige de nuevo a la página de contacto
+        return redirect('contact')  
+    # Si no es POST, simplemente renderiza la plantilla
     return render(request, 'contact.html')
 
 def about(request):

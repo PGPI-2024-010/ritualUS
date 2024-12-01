@@ -299,6 +299,31 @@ class PaymentView(View):
 def contact(request):
     return render(request, 'contact.html')
 
+def contact_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+
+        # Correo enviado a la empresa
+        subject_to_company = f"Nuevo mensaje de contacto de {name}"
+        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
+        recipient_list_company = ['info@ritualus.com']
+
+        # Correo de confirmación al usuario
+        subject_to_user = "Confirmación de tu mensaje en RitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        recipient_list_user = [email]
+
+        try:
+            # Enviar ambos correos
+            send_mail(subject_to_company, message_to_company, 'info@ritualus.com', recipient_list_company)
+            send_mail(subject_to_user, message_to_user, 'info@ritualus.com', recipient_list_user)
+            messages.success(request, '¡Tu mensaje ha sido enviado exitosamente! Revisa tu correo para una confirmación.')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al enviar tu mensaje: {e}')
+        return redirect('contact')
+    return render(request, 'contact.html')
 
 def about(request):
     return render(request, 'about.html')

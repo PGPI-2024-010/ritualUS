@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order, Address, Payment, ProductStatus
+from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -14,6 +14,8 @@ from django.views import View
 from django.shortcuts import render
 from dotenv import load_dotenv
 from django.core.mail import send_mail
+from django.utils.timezone import now
+from datetime import timedelta
 
 stripe.api_key = settings.STRIPE_API_KEY
 
@@ -191,7 +193,7 @@ def confirmed_order(request):
               from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
-        order.status = 'confirmed'
+        order.status = 'in delivery'
     elif payment_method == 'card':
         order.payment = 'credit card'
         order.status = 'confirmed'
@@ -376,6 +378,10 @@ def order_tracking_view(request):
         try:
             order = Order.objects.get(id=order_id, user_id=request.user.id)
             order_products = OrderProduct.objects.filter(order_id=order)
+            time_to_delivered = now() - order.date
+            if time_to_delivered >= timedelta(minutes=5):
+                order.status = 'delivered'
+                order.save()
         except Order.DoesNotExist:
             order = None
             order_products = None

@@ -26,9 +26,11 @@ class Category(Enum):
         return [(i.value, i.name) for i in enum]
 
 
-class ProductStatus(Enum):
+class OrderStatus(Enum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
+    IN_DELIVERY = "in delivery"
+    DELIVERED = "delivered"
 
     @classmethod
     def choices(enum):
@@ -87,14 +89,14 @@ class Address(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
     payment = models.CharField(max_length=100, choices=Payment.choices())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                              related_name="order", blank=True, null=True)
     address = models.ForeignKey(
         Address, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
-    status = models.CharField(max_length=50, choices=ProductStatus.choices(
-    ), default=ProductStatus.PENDING.value)
+    status = models.CharField(max_length=50, choices=OrderStatus.choices(
+    ), default=OrderStatus.PENDING.value)
 
 
 class OrderProduct(models.Model):

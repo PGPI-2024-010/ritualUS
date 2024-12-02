@@ -62,40 +62,6 @@ ul, li {
 	list-style-type: none;
 }
 
-
-/* Navbar */
-.navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar .logo {
-    font-size: 1rem;
-    color: #fff;
-    text-decoration: none;
-}
-
-.navbar .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-}
-
-.navbar .nav-links a {
-    color: #fff;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-}
-
-.navbar .nav-links a:hover {
-    background-color: #555;
-    border-radius: 5px;
-}
-
 /* Estilos generales para la sección de autenticación */
 .auth-section {
     background-color: #f8f9fa;
@@ -181,18 +147,7 @@ ul, li {
     text-decoration: underline;
 }
 
-/* Footer */
-footer {
-    background-color: #343a40;
-    color: #fff;
-    padding: 1rem 0;
-    text-align: center;
-    width: 100%;
-}
 
-footer p {
-    margin: 0;
-}
 
 /* Estilos para los mensajes de error */
 .error-message {

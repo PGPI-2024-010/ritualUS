@@ -185,8 +185,9 @@ def confirmed_order(request):
     for order_product in order.order_product.all():
         product = order_product.product_id
         message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
-    
-    total_price = sum(product.quantity * product.unity_price for product in order.order_product.all())
+
+    total_price = sum(
+        product.quantity * product.unity_price for product in order.order_product.all())
     message += f"\nTotal: {total_price}€"
 
     send_mail(subject=subject, message=message,
@@ -244,6 +245,8 @@ class PaymentSuccessView(View):
         order_products = OrderProduct.objects.filter(order_id=order_id)
         address = order.address
         user = request.user
+        order.status = 'in delivery'
+        order.save()
         total_price = 0
         for product in order_products:
             if product.product_id.discount_price:
@@ -258,7 +261,7 @@ class PaymentSuccessView(View):
             first_name = request.session.get('first_name', 'Desconocido')
             last_name = request.session.get('last_name', 'Desconocido')
 
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name':first_name, 'last_name':last_name})
+        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
 
 
 class PaymentView(View):
@@ -289,7 +292,6 @@ class PaymentView(View):
             currency='eur',
             description='Pago de productos'
         )
-
         return render(request, 'payment.html', {
             'order_products': order_products,
             'total_price': total_price,
@@ -299,6 +301,7 @@ class PaymentView(View):
         })
 
     def post(self, request):
+        order = Order.objects.get(id=order_id)
         cart_items = request.session.get('products', [])
 
         total_amount = 0
@@ -336,35 +339,42 @@ class PaymentView(View):
 
 def contact(request):
     if request.method == 'POST':
-    # Se capturan los datos del formulario
+        # Se capturan los datos del formulario
         name = request.POST.get('name')
         email = request.POST.get('email')
         message = request.POST.get('message')
 
         # Se prepara el correo para la empresa
         subject_to_company = f"Nuevo mensaje de contacto de {name}"
-        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
+        message_to_company = f"Nombre: {
+            name}\nEmail: {email}\nMensaje:\n{message}"
         recipient_list_company = ['ritualusinfo@gmail.com']
 
         # Se prepara el correo de confirmación para el usuario
         subject_to_user = "Confirmación de tu mensaje en RitualUS"
-        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{
+            message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
         recipient_list_user = [email]
 
         try:
             # Se envían los correos (aparecerá en la consola)
-            send_mail(subject_to_company, message_to_company, 'ritualusinfo@gmail.com', recipient_list_company)
-            send_mail(subject_to_user, message_to_user, 'ritualusinfo@gmail.com', recipient_list_user)
+            send_mail(subject_to_company, message_to_company,
+                      'ritualusinfo@gmail.com', recipient_list_company)
+            send_mail(subject_to_user, message_to_user,
+                      'ritualusinfo@gmail.com', recipient_list_user)
             # Si tiene éxito:
-            messages.success(request, '¡Tu mensaje ha sido enviado exitosamente! Revisa la consola para simular el envío de correos.')
+            messages.success(
+                request, '¡Tu mensaje ha sido enviado exitosamente! Revisa la consola para simular el envío de correos.')
         except Exception as e:
             # Si ocurre un error:
-            messages.error(request, f'Ocurrió un error al enviar tu mensaje: {e}')
+            messages.error(
+                request, f'Ocurrió un error al enviar tu mensaje: {e}')
 
         # Se redirige de nuevo a la página de contacto
-        return redirect('contact')  
+        return redirect('contact')
     # Si no es POST, simplemente renderiza la plantilla
     return render(request, 'contact.html')
+
 
 def about(request):
     return render(request, 'about.html')

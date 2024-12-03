@@ -394,3 +394,16 @@ def order_tracking_view(request):
             order = None
             order_products = None
     return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})
+
+
+def search_products(request):
+    query = request.GET.get('query', '')
+    print(query)
+    if query:
+        
+        products = Product.objects.filter(name__icontains=query)[:10]  
+        print(products)
+        results = [{'id': product.id, 'name': product.name} for product in products]
+        print(results)
+        return JsonResponse({'results': results})
+    return JsonResponse({'results': []})

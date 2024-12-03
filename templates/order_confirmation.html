@@ -38,12 +38,30 @@
             <form method="POST" action="{% url 'confirmed_order' %}">
                 <body>Se enviará un correo de confirmación a la siguiente dirección:</body>
                 {% if authenticated %}
-                <li><strong>Email:</strong> {{ email }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
                 {% else %}
                 <li><strong>Email:</strong>
                 <input type="email" name="email" id="email" value="{{ email }}" required>
                 </li>
                 {% endif %}
+
+                {% if authenticated %}
+                <li><strong>Nombre:</strong> {{ user.first_name }}</li>
+                {% else %}
+                <li><strong>Nombre:</strong>
+                <input type="text" name="first_name" id="first_name" value="{{ first_name }}" required>
+                </li>
+                {% endif %}
+
+
+                {% if authenticated %}
+                <li><strong>Apellido:</strong> {{ user.last_name }}</li>
+                {% else %}
+                <li><strong>Apellido:</strong>
+                <input type="text" name="last_name" id="last_name" value="{{ last_name }}" required>
+                </li>
+                {% endif %}
+
                 <li><strong>Método de pago:</strong>
                 <label>
                     <input type="radio" name="payment_method" value="card" required>

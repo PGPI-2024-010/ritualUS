@@ -157,12 +157,40 @@ def confirmed_order(request):
             user=request.user, status='pending')
         address.user = request.user
         address.save()
+        first_name = request.user.first_name
+        last_name = request.user.last_name
     else:
         order, created = Order.objects.get_or_create(
             user=None, status='pending')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+
     order.address = address
-    send_mail("Pedido realizado con éxito", "¡Su pedido en RitualUS se ha realizado con éxito!",
-              "info@ritualus.com", [email])
+    request.session['first_name'] = first_name
+    request.session['last_name'] = last_name
+    subject = "Pedido realizado con éxito"
+    message = f"""
+    Estimado {first_name} {last_name},
+
+    ¡Gracias por tu compra en RitualUS! Tu pedido ha sido confirmado.
+
+    Detalles del Pedido:
+    Número de Pedido: {order.id}
+    Dirección de Entrega: {address.street} {address.number}, {address.city}, {address.country}, Código Postal: {address.postal_code}
+
+    Método de pago: {payment_method}
+    """
+
+    for order_product in order.order_product.all():
+        product = order_product.product_id
+        message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
+    
+    total_price = sum(product.quantity * product.unity_price for product in order.order_product.all())
+    message += f"\nTotal: {total_price}€"
+
+    send_mail(subject=subject, message=message,
+              from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
         order.status = 'in delivery'
@@ -172,7 +200,7 @@ def confirmed_order(request):
         order.save()
         return redirect('payment', order_id=order.id)
     order.save()
-    return redirect('home')
+    return redirect(f'/payment/success/{order.id}/')
 
 
 class ProductDetailView(DetailView):
@@ -222,7 +250,15 @@ class PaymentSuccessView(View):
                 total_price += product.product_id.discount_price * product.quantity
             else:
                 total_price += product.product_id.price * product.quantity
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'user': user})
+
+        if user.is_authenticated:
+            first_name = user.first_name
+            last_name = user.last_name
+        else:
+            first_name = request.session.get('first_name', 'Desconocido')
+            last_name = request.session.get('last_name', 'Desconocido')
+
+        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name':first_name, 'last_name':last_name})
 
 
 class PaymentView(View):
@@ -299,8 +335,36 @@ class PaymentView(View):
 
 
 def contact(request):
-    return render(request, 'contact.html')
+    if request.method == 'POST':
+    # Se capturan los datos del formulario
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
 
+        # Se prepara el correo para la empresa
+        subject_to_company = f"Nuevo mensaje de contacto de {name}"
+        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
+        recipient_list_company = ['ritualusinfo@gmail.com']
+
+        # Se prepara el correo de confirmación para el usuario
+        subject_to_user = "Confirmación de tu mensaje en RitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        recipient_list_user = [email]
+
+        try:
+            # Se envían los correos (aparecerá en la consola)
+            send_mail(subject_to_company, message_to_company, 'ritualusinfo@gmail.com', recipient_list_company)
+            send_mail(subject_to_user, message_to_user, 'ritualusinfo@gmail.com', recipient_list_user)
+            # Si tiene éxito:
+            messages.success(request, '¡Tu mensaje ha sido enviado exitosamente! Revisa la consola para simular el envío de correos.')
+        except Exception as e:
+            # Si ocurre un error:
+            messages.error(request, f'Ocurrió un error al enviar tu mensaje: {e}')
+
+        # Se redirige de nuevo a la página de contacto
+        return redirect('contact')  
+    # Si no es POST, simplemente renderiza la plantilla
+    return render(request, 'contact.html')
 
 def about(request):
     return render(request, 'about.html')

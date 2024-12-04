@@ -232,6 +232,50 @@ footer p {
 }
 
 
+/* Products filter */
+
+/* Estilo del formulario de filtros */
+.filter-form {
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para cada grupo */
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.filter-group select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 14px;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s;
+}
+
+.filter-group select:hover,
+.filter-group select:focus {
+    border-color: #ff6f61;
+    outline: none;
+}
+
 
 
 

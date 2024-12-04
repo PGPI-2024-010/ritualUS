@@ -58,7 +58,7 @@ def signup_view(request):
 class ProductListView(ListView):
     template_name = 'products.html'
     context_object_name = 'products'
-    paginate_by = 10
+    paginate_by = 9
 
     def get_queryset(self):
         queryset = Product.objects.all()

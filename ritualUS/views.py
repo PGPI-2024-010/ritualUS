@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus
+from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus, ProductType
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -61,13 +61,39 @@ class ProductListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Filtrar por categoría (si existe)
         category_id = self.request.GET.get('category')
         if category_id:
-            # Filtra los productos por la categoría seleccionada
-            return Product.objects.filter(product_type_id=category_id)
-        else:
-            # Si no hay filtro, muestra todos los productos
-            return Product.objects.all()
+            queryset = queryset.filter(product_type_id=category_id)
+
+        # Filtrar por departamento
+        department = self.request.GET.get('department')
+        if department:
+            queryset = queryset.filter(department__icontains=department)
+
+        # Filtrar por sección
+        section = self.request.GET.get('section')
+        if section:
+            queryset = queryset.filter(section__icontains=section)
+
+        # Filtrar por fabricante
+        factory = self.request.GET.get('factory')
+        if factory:
+            queryset = queryset.filter(factory__icontains=factory)
+
+        return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = ProductType.objects.all()
+        context['departments'] = Product.objects.values_list(
+            'department', flat=True).distinct().order_by('department')
+        context['sections'] = Product.objects.values_list(
+            'section', flat=True).distinct().order_by('section')
+        context['factories'] = Product.objects.values_list(
+            'factory', flat=True).distinct().order_by('factory')
+        return context
 
 
 def cart_view(request):

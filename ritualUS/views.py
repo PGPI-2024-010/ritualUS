@@ -399,14 +399,12 @@ def contact(request):
 
         # Se prepara el correo para la empresa
         subject_to_company = f"Nuevo mensaje de contacto de {name}"
-        message_to_company = f"Nombre: {
-            name}\nEmail: {email}\nMensaje:\n{message}"
+        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
         recipient_list_company = ['ritualusinfo@gmail.com']
 
         # Se prepara el correo de confirmación para el usuario
         subject_to_user = "Confirmación de tu mensaje en RitualUS"
-        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{
-            message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
         recipient_list_user = [email]
 
         try:

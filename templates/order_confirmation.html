@@ -34,7 +34,10 @@
                 </div>
                 {% endfor %}
             </div>
-            <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span></h3>
+            <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span>
+                <div class="shipping">
+                    <h3>Costo de envío: <span class="shipping-price">{{ order.shipping_price|floatformat:2 }} €</span></h3>
+            </h3>
             <form method="POST" action="{% url 'confirmed_order' %}">
                 <body>Se enviará un correo de confirmación a la siguiente dirección:</body>
                 {% if authenticated %}

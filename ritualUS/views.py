@@ -91,6 +91,7 @@ def update_cart(request):
     product_id = request.GET.get('product_id')
     quantity = int(request.GET.get('quantity', 1))
     product = Product.objects.get(id=product_id)
+    total = 0
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(
             user=request.user, status='pending')
@@ -101,6 +102,15 @@ def update_cart(request):
                                                                 defaults={'quantity': quantity, 'unity_price': product.price, })
     order_product.quantity = quantity
     order_product.unity_price = product.price
+    orderProducts = OrderProduct.objects.filter(order_id=order)
+    for orderProduct in orderProducts:
+        total += orderProduct.unity_price * orderProduct.quantity
+    if total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    print(order.shipping_price)
+    order.save()
     order_product.save()
     return redirect('cart')
 
@@ -108,6 +118,7 @@ def update_cart(request):
 def remove_from_cart(request):
     product_id = request.GET.get('product_id')
     product = Product.objects.get(id=product_id)
+    total = 0.00
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(
             user=request.user, status='pending')
@@ -116,6 +127,14 @@ def remove_from_cart(request):
             user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(
         order_id=order, product_id=product)
+    orderProducts = OrderProduct.objects.filter(order_id=order)
+    for orderProduct in orderProducts:
+        total += orderProduct.unity_price * orderProduct.quantity
+    if total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    order.save()
     order_product.delete()
     return redirect('cart')
 
@@ -132,11 +151,18 @@ def order_confirmation_view(request):
     cart_items = OrderProduct.objects.filter(order_id=order) if order else []
     cart_total = sum(item.unity_price *
                      item.quantity for item in cart_items) if order else 0
+    if cart_total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    order.save()
+
     context = {
         'email': email,
         'cart_items': cart_items,
         'cart_total': cart_total,
         'authenticated': request.user.is_authenticated,
+        'order': order,
     }
     return render(request, 'order_confirmation.html', context)
 
@@ -231,7 +257,6 @@ class CartView(View):
             {'product_id': 2, 'name': 'Producto 2', 'price': 2, 'quantity': 1},
             {'product_id': 3, 'name': 'Producto 3', 'price': 3, 'quantity': 1},
         ]
-
         # Guardar los productos en la sesión
         request.session['cart_items'] = cart_items
 
@@ -292,12 +317,14 @@ class PaymentView(View):
             currency='eur',
             description='Pago de productos'
         )
+        print(order.shipping_price)
         return render(request, 'payment.html', {
             'order_products': order_products,
             'total_price': total_price,
             'client_secret': payment_intent.client_secret,
             'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY,
             'order_id': order_id,
+            'order': order,
         })
 
     def post(self, request):
@@ -346,12 +373,14 @@ def contact(request):
 
         # Se prepara el correo para la empresa
         subject_to_company = f"Nuevo mensaje de contacto de {name}"
-        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
+        message_to_company = f"Nombre: {
+            name}\nEmail: {email}\nMensaje:\n{message}"
         recipient_list_company = ['ritualusinfo@gmail.com']
 
         # Se prepara el correo de confirmación para el usuario
         subject_to_user = "Confirmación de tu mensaje en RitualUS"
-        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{
+            message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
         recipient_list_user = [email]
 
         try:

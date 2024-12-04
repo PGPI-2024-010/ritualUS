@@ -107,6 +107,7 @@
                 {% endfor %}
             </ul>
             <p><strong>Total a pagar: €{{ total_price|floatformat:2 }}</strong></p>
+            <p><strong>Envío: €{{ order.shipping_price|floatformat:2 }}</strong></p>
 
             <!-- Formulario de pago -->
             <form id="payment-form">

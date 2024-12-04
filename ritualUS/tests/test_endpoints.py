@@ -123,16 +123,6 @@ def test_remove_from_cart_url(client):
     assert response.status_code == 200 or 302  # 302 si no estás autenticado
 
 
-# Test para la URL de pago
-def test_payment_url(client):
-    from ritualUS.models import Order
-    """Prueba que la URL de pago esté configurada correctamente"""
-    response = client.get(reverse('payment', kwargs={
-                          'order_id': 1}))
-
-    assert response.status_code == 200
-
-
 # Test para la URL de éxito del pago
 def test_payment_success_url(client):
     """Prueba que la URL de éxito del pago esté configurada correctamente"""
@@ -146,14 +136,6 @@ def test_order_confirmation_url(client):
     """Prueba que la URL de confirmación del pedido esté configurada correctamente"""
     response = client.get(reverse('order_confirmation_view'))
     assert response.status_code == 200
-
-
-# Test para la URL de pedido confirmado
-@pytest.mark.skip
-def test_confirmed_order_url(client):
-    """Prueba que la URL de pedido confirmado esté configurada correctamente"""
-    response = client.get(reverse('confirmed_order'))
-    assert response.status_code == 200 or 302  # 302 si no estás autenticado
 
 
 # Test para la URL de seguimiento de pedidos

@@ -12,12 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
 
-STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
-STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_API_KEY = 'sk_test_51QOizQL6pSx3PYtRvOotv226hmJhjzsKqS7RRHl5wBSUH3kTY5hygQgbLt2ziJc1DYTNoiylV3kA0qgl6XrbJV9H00Gh7VsP51'  # clave secreta
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51QOizQL6pSx3PYtRJV56TkRpmAfMEavBeyuwZMEZZ6iZqLxp1Ef797WPBr7J1HQc5JDw62dZbElmR6T5INXN8mt100cpgCfCyM'  # clave pública
+
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -154,6 +153,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'ritualUS/static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = '/home/julsanmar2/ritualUS/staticfiles'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -168,3 +169,4 @@ ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registr
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

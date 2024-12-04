@@ -1,213 +1,121 @@
+{% extends 'base_generic.html' %}
 {% load static %}
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
+{% load category_template_tags %}
+{% block content %}
     <style>
-        @font-face {
-            font-family: 'Montserrat-Regular';
-            src: url("{% static 'fonts/Montserrat-Regular.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Medium';
-            src: url("{% static 'fonts/Montserrat-Medium.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Bold';
-            src: url("{% static 'fonts/Montserrat-Bold.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Italic';
-            src: url("{% static 'fonts/Montserrat-Italic.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Black';
-            src: url("{% static 'fonts/Montserrat-Black.ttf' %}") format('truetype');
-        }
-
-        /* Aquí empieza el estilo del navbar */
+        /* Estilo general */
         body {
-            font-family: 'Montserrat-Regular', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-
-        .navbar {
-            background-color: #333;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-        }
-
-        .navbar .nav-links {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .navbar .nav-links li {
-            display: inline;
-            margin-left: 20px;
-        }
-
-        .navbar .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: normal;
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         .hero {
-            background: #f4f4f4;
-            padding: 40px;
+            background-color: #28a745;
+            color: white;
+            padding: 3rem 1rem;
             text-align: center;
         }
 
-        .hero h1, .hero h2 {
-            font-family: 'Montserrat-Bold';
+        .hero-text h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
-        .hero-text {
-            max-width: 800px;
-            margin: 0 auto;
+        .hero-text p {
+            font-size: 1.2rem;
+            margin: 0;
         }
 
-        .btn {
-            background-color: #4CAF50;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            cursor: pointer;
+        /* Sección de resumen */
+        section {
+            padding: 2rem 1rem;
+            margin: 2rem 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .hero-text li {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text strong {
+            font-weight: bold;
+        }
+
+        /* Enlace de vuelta al inicio */
+        .hero-text a {
+            font-size: 1.1rem;
+            color: #007bff;
             text-decoration: none;
+            font-weight: bold;
         }
 
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .social-links li {
-            display: inline;
-            margin-left: 10px;
-        }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .social-links i {
-            font-size: 18px;
-        }
-
-        .product-card {
-            border: 1px solid #ccc;
-            margin: 20px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .product-card img {
-            max-width: 100%;
-            height: auto;
+        .hero-text a:hover {
+            text-decoration: underline;
         }
     </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RitualUS - Pago</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <a href="/" class="logo">RitualUS</a>
-            <ul class="nav-links">
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/products/">Productos</a></li>
-                <li><a href="/about/">Nosotros</a></li>
-                <li><a href="/contact/">Contacto</a></li>
-                <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
-                {% else %}
-                <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
-<!--SECTION-->
     <section class="hero">
         <div class="hero-text">
-            <h1>Pedido realizado con exito!</h1>
-            Muchas gracias por su confianza, ¡esperamos verle pronto!
-
+            <h1>Pedido realizado con éxito</h1>
+            <p>Muchas gracias por su confianza, ¡esperamos verle pronto!</p>
         </div>
     </section>
+
+    <!-- Resumen de datos de entrega -->
     <section>
         <div class="hero-text">
+            <h2>Resumen de datos de entrega</h2>
             <ul>
-                <h2>
-                    Resumen de datos de entrega
-                </h2>
-                <!-- Mostrar el número de pedido -->
                 <li><strong>Número de pedido:</strong> {{ order.id }}</li>
-                <!-- Mostrar el nombre del usuario -->
-                <li><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</li>
-                <!-- Dirección de entrega -->
-                <li><strong>Dirección completa:</strong> {{ order.address.street }} {{ order.address.number }} - {{ order.address.city }}, {{ order.address.country }} - Código Postal: {{ order.address.postal_code }}</li>
-                <br>
-                <!-- Resumen de productos comprados -->
-                <h2>Resumen depedido:</h2>
-                    {% for item in order_products %}
-                        <li>
-                            <!-- Mostrar nombre del producto y precio -->
-                            {{ item.product_id.name }} - €{{ item.product_id.price|floatformat:2 }}
-        
-                            <!-- Verificar si hay un precio con descuento -->
-                            {% if item.product_id.discount_price %}
-                                (Descuento: €{{ item.product_id.discount_price|floatformat:2 }})
-                            {% endif %}
-        
-                            <!-- Mostrar la cantidad de productos -->
-                            x {{ item.quantity }}
-                        </li>
-                    {% endfor %}
-                <li><strong>Precio total:</strong> {{ total_price|floatformat:2}} €</li>
-
+                <li><strong>Nombre:</strong> {{ first_name }} {{ last_name }}</li>
+                <li><strong>Dirección completa:</strong> 
+                    {{ order.address.street }} {{ order.address.number }} - 
+                    {{ order.address.city }}, {{ order.address.country }} - 
+                    Código Postal: {{ order.address.postal_code }}
+                </li>
             </ul>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 RitualUS. Todos los derechos reservados.</p>
-        <ul class="social-links">
-            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-        </ul>
-    </footer>
+    <!-- Resumen del pedido -->
+    <section>
+        <div class="hero-text">
+            <h2>Resumen del pedido</h2>
+            <ul>
+                {% for item in order_products %}
+                    <li>
+                        <strong>{{ item.product_id.name }}</strong> - €{{ item.product_id.price|floatformat:2 }}
+                        {% if item.product_id.discount_price %}
+                            (Descuento: €{{ item.product_id.discount_price|floatformat:2 }})
+                        {% endif %}
+                        x {{ item.quantity }}
+                    </li>
+                {% endfor %}
+                <li><strong>Precio total:</strong> €{{ total_price|floatformat:2 }}</li>
+            </ul>
+        </div>
+    </section>
 
-    
-</body>
-</html>
+    <!-- Enlace para volver al inicio -->
+    <section>
+        <div class="hero-text">
+            <a href="{% url 'home' %}"><strong>Volver al inicio</strong></a>
+        </div>
+    </section>
+
+{% endblock content %}

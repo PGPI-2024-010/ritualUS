@@ -1,160 +1,90 @@
+{% extends 'base_generic.html' %}
 {% load static %}
+{% load category_template_tags %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
+{% block content %}
     <style>
-        @font-face {
-            font-family: 'Montserrat-Regular';
-            src: url("{% static 'fonts/Montserrat-Regular.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Medium';
-            src: url("{% static 'fonts/Montserrat-Medium.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Bold';
-            src: url("{% static 'fonts/Montserrat-Bold.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Italic';
-            src: url("{% static 'fonts/Montserrat-Italic.ttf' %}") format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Montserrat-Black';
-            src: url("{% static 'fonts/Montserrat-Black.ttf' %}") format('truetype');
-        }
-
-        /* Aquí empieza el estilo del navbar */
+        /* Estilo general */
         body {
-            font-family: 'Montserrat-Regular', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-
-        .navbar {
-            background-color: #333;
-            padding: 10px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-        }
-
-        .navbar .nav-links {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .navbar .nav-links li {
-            display: inline;
-            margin-left: 20px;
-        }
-
-        .navbar .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: normal;
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         .hero {
-            background: #f4f4f4;
-            padding: 40px;
+            background-color: #007bff;
+            color: white;
+            padding: 2rem;
             text-align: center;
         }
 
-        .hero h1, .hero h2 {
-            font-family: 'Montserrat-Bold';
+        .hero-text h1 {
+            font-size: 2.5rem;
+            margin: 0;
         }
 
-        .hero-text {
-            max-width: 800px;
-            margin: 0 auto;
+        /* Resumen de pago */
+        .payment-summary {
+            background-color: #ffffff;
+            padding: 2rem;
+            margin: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .btn {
-            background-color: #4CAF50;
-            padding: 10px 20px;
+        .payment-summary ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .payment-summary li {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .payment-summary p {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1.5rem;
+        }
+
+        /* Formulario de pago */
+        #payment-form {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #card-element {
+            margin-bottom: 1rem;
+        }
+
+        #submit-button {
+            padding: 0.7rem 1.5rem;
+            background-color: #28a745;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
-            text-decoration: none;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 250px;
+            transition: background-color 0.3s;
         }
 
-        .btn:hover {
-            background-color: #45a049;
+        #submit-button:hover {
+            background-color: #218838;
         }
 
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .social-links li {
-            display: inline;
-            margin-left: 10px;
-        }
-
-        .social-links a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .social-links i {
-            font-size: 18px;
-        }
-
-        .product-card {
-            border: 1px solid #ccc;
-            margin: 20px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .product-card img {
-            max-width: 100%;
-            height: auto;
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
     </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RitualUS - Pago</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <a href="/" class="logo">RitualUS</a>
-            <ul class="nav-links">
-                <li><a href="/">Inicio</a></li>
-                <li><a href="/products/">Productos</a></li>
-                <li><a href="/about/">Nosotros</a></li>
-                <li><a href="/contact/">Contacto</a></li>
-                <li><a href="/cart/"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
-                {% else %}
-                <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
 
     <!-- Resumen de pago -->
     <section class="hero">
@@ -163,11 +93,12 @@
         </div>
     </section>
     <section>
-        <div class="hero-text">
+        <div class="payment-summary">
+            <h2>Resumen de tu Pedido</h2>
             <ul>
                 {% for item in order_products %}
                     <li>
-                        {{ item.product_id.name }} - €{{ item.product_id.price|floatformat:2 }}
+                        <strong>{{ item.product_id.name }}</strong> - €{{ item.product_id.price|floatformat:2 }}
                         {% if item.product_id.discount_price %}
                             (Descuento: €{{ item.product_id.discount_price|floatformat:2 }})
                         {% endif %}
@@ -180,22 +111,12 @@
             <!-- Formulario de pago -->
             <form id="payment-form">
                 <div id="card-element">
-                    <!-- Un campo para la tarjeta de crédito se generará aquí -->
+                    <!-- El campo para la tarjeta de crédito se generará aquí -->
                 </div>
                 <button id="submit-button" class="btn">Pagar</button>
             </form>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 RitualUS. Todos los derechos reservados.</p>
-        <ul class="social-links">
-            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-        </ul>
-    </footer>
 
     <!-- Cargar Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
@@ -223,11 +144,10 @@
                 console.error(error.message);
             } else {
                 // Redirigir a la página de éxito si el pago es exitoso
-                urlpayment_success = '/payment/success/'+'{{ order_id }}'+'/';
+                urlpayment_success = '/payment/success/' + '{{ order_id }}' + '/';
                 window.location.href = urlpayment_success;
             }
         });
     </script>
 
-</body>
-</html>
+{% endblock content %}

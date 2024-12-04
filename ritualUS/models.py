@@ -26,6 +26,17 @@ class Category(Enum):
         return [(i.value, i.name) for i in enum]
 
 
+class OrderStatus(Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    IN_DELIVERY = "in delivery"
+    DELIVERED = "delivered"
+
+    @classmethod
+    def choices(enum):
+        return [(i.value, i.name) for i in enum]
+
+
 class ProductType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -73,17 +84,19 @@ class Address(models.Model):
     number = models.IntegerField()
     apartment_number = models.CharField(max_length=50, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name="address")
+                             on_delete=models.CASCADE, related_name="address", null=True)
 
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
     payment = models.CharField(max_length=100, choices=Payment.choices())
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name="order")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="order", blank=True, null=True)
     address = models.ForeignKey(
-        Address, on_delete=models.CASCADE, related_name="order")
+        Address, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
+    status = models.CharField(max_length=50, choices=OrderStatus.choices(
+    ), default=OrderStatus.PENDING.value)
 
 
 class OrderProduct(models.Model):
@@ -93,6 +106,10 @@ class OrderProduct(models.Model):
         Product, on_delete=models.CASCADE, related_name="order_product")
     quantity = models.IntegerField()
     unity_price = models.FloatField()
+
+    @property
+    def order_product_price(self):
+        return self.quantity*self.unity_price
 
 
 class CustomUser(AbstractUser):

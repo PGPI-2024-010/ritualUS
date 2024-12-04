@@ -55,7 +55,7 @@
 								{% endif %}
 							</p>
 							{% if product.is_available %}
-							<a href="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+							<a href="{% url 'update_cart' %}?product_id={{ product.id }}&quantity=1" class="btn btn-add-cart">Agregar al Carrito</a>
 							{% else %}
 							<p class="out-of-stock" style="color: red; font-weight: bold;">Producto Agotado</p>
 							{% endif %}

@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order
+from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -13,8 +13,11 @@ from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import render
 from dotenv import load_dotenv
-load_dotenv()
-stripe.api_key = os.getenv('STRIPE_API_KEY')
+from django.core.mail import send_mail
+from django.utils.timezone import now
+from datetime import timedelta
+
+stripe.api_key = settings.STRIPE_API_KEY
 
 
 class Home(ListView):
@@ -67,6 +70,140 @@ class ProductListView(ListView):
             return Product.objects.all()
 
 
+def cart_view(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(
+            user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(
+            user=None, status='pending')
+    cart_items = OrderProduct.objects.filter(order_id=order) if order else []
+    cart_total = sum(item.unity_price *
+                     item.quantity for item in cart_items) if order else 0
+    context = {
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+    }
+    return render(request, 'cart.html', context)
+
+
+def update_cart(request):
+    product_id = request.GET.get('product_id')
+    quantity = int(request.GET.get('quantity', 1))
+    product = Product.objects.get(id=product_id)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(
+            user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(
+            user=None, status='pending')
+    order_product, created = OrderProduct.objects.get_or_create(order_id=order, product_id=product,
+                                                                defaults={'quantity': quantity, 'unity_price': product.price, })
+    order_product.quantity = quantity
+    order_product.unity_price = product.price
+    order_product.save()
+    return redirect('cart')
+
+
+def remove_from_cart(request):
+    product_id = request.GET.get('product_id')
+    product = Product.objects.get(id=product_id)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(
+            user=request.user, status='pending')
+    else:
+        order, created = Order.objects.get_or_create(
+            user=None, status='pending')
+    order_product, created = OrderProduct.objects.get_or_create(
+        order_id=order, product_id=product)
+    order_product.delete()
+    return redirect('cart')
+
+
+def order_confirmation_view(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(
+            user=request.user, status='pending')
+        email = request.user.email
+    else:
+        order, created = Order.objects.get_or_create(
+            user=None, status='pending')
+        email = ""
+    cart_items = OrderProduct.objects.filter(order_id=order) if order else []
+    cart_total = sum(item.unity_price *
+                     item.quantity for item in cart_items) if order else 0
+    context = {
+        'email': email,
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'authenticated': request.user.is_authenticated,
+    }
+    return render(request, 'order_confirmation.html', context)
+
+
+def confirmed_order(request):
+    email = request.POST.get('email')
+    payment_method = request.POST.get('payment_method')
+    country = request.POST.get('country')
+    city = request.POST.get('city')
+    postal_code = request.POST.get('postal_code')
+    street = request.POST.get('street')
+    number = int(request.POST.get('number'))
+    apartment_number = request.POST.get('apartment_number', None)
+    address, created = Address.objects.get_or_create(
+        country=country, city=city, postal_code=postal_code, street=street, number=number, apartment_number=apartment_number)
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(
+            user=request.user, status='pending')
+        address.user = request.user
+        address.save()
+        first_name = request.user.first_name
+        last_name = request.user.last_name
+    else:
+        order, created = Order.objects.get_or_create(
+            user=None, status='pending')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+
+    order.address = address
+    request.session['first_name'] = first_name
+    request.session['last_name'] = last_name
+    subject = "Pedido realizado con éxito"
+    message = f"""
+    Estimado {first_name} {last_name},
+
+    ¡Gracias por tu compra en RitualUS! Tu pedido ha sido confirmado.
+
+    Detalles del Pedido:
+    Número de Pedido: {order.id}
+    Dirección de Entrega: {address.street} {address.number}, {address.city}, {address.country}, Código Postal: {address.postal_code}
+
+    Método de pago: {payment_method}
+    """
+
+    for order_product in order.order_product.all():
+        product = order_product.product_id
+        message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
+
+    total_price = sum(
+        product.quantity * product.unity_price for product in order.order_product.all())
+    message += f"\nTotal: {total_price}€"
+
+    send_mail(subject=subject, message=message,
+              from_email="ritualus@gmail.com", recipient_list=[email])
+    if payment_method == 'cash':
+        order.payment = 'cash'
+        order.status = 'in delivery'
+    elif payment_method == 'card':
+        order.payment = 'credit card'
+        order.status = 'confirmed'
+        order.save()
+        return redirect('payment', order_id=order.id)
+    order.save()
+    return redirect(f'/payment/success/{order.id}/')
+
+
 class ProductDetailView(DetailView):
     template_name = 'product_detail.html'
     model = Product
@@ -108,50 +245,55 @@ class PaymentSuccessView(View):
         order_products = OrderProduct.objects.filter(order_id=order_id)
         address = order.address
         user = request.user
+        order.status = 'in delivery'
+        order.save()
         total_price = 0
         for product in order_products:
             if product.product_id.discount_price:
                 total_price += product.product_id.discount_price * product.quantity
             else:
                 total_price += product.product_id.price * product.quantity
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'user': user})
+
+        if user.is_authenticated:
+            first_name = user.first_name
+            last_name = user.last_name
+        else:
+            first_name = request.session.get('first_name', 'Desconocido')
+            last_name = request.session.get('last_name', 'Desconocido')
+
+        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
 
 
 class PaymentView(View):
     def get(self, request, order_id):
-        # Obtener los productos asociados al pedido
         order_products = OrderProduct.objects.filter(order_id=order_id)
-        address = Order.objects.get(id=order_id).address
-        # Inicializar una lista para los productos con su información
+        order = Order.objects.get(id=order_id)
+        address = order.address
         products = []
         total_price = 0
 
         for item in order_products:
-            product = item.product_id  # Acceder al producto relacionado con OrderProduct
+            product = item.product_id
             if product.discount_price:
-                # Calcular el precio total con descuento
                 total_price += product.discount_price * item.quantity
             else:
-                total_price += product.price * item.quantity  # Calcular el precio total
+                total_price += product.price * item.quantity
 
-            # Añadir el producto a la lista
             products.append({
                 'name': product.name,
                 'price': product.price,
-                'discount_price': product.discount_price,  # Si tiene descuento
+                'discount_price': product.discount_price,
                 'quantity': item.quantity,
                 'address': address,
             })
 
-        # Crear un PaymentIntent de Stripe
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),  # Convertir a centavos
+            amount=int(total_price * 100),
             currency='eur',
             description='Pago de productos'
         )
-
         return render(request, 'payment.html', {
-            'order_products': order_products,  # Pasa los productos con los detalles
+            'order_products': order_products,
             'total_price': total_price,
             'client_secret': payment_intent.client_secret,
             'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY,
@@ -159,49 +301,109 @@ class PaymentView(View):
         })
 
     def post(self, request):
+        order = Order.objects.get(id=order_id)
         cart_items = request.session.get('products', [])
 
         total_amount = 0
         line_items = []
         for item in cart_items:
-            # Obtener el producto de la base de datos
             product = Product.objects.get(id=item['product_id'])
-            # Calcular el precio total por producto
             total_amount += product.price * item['quantity']
             line_items.append({
                 'price_data': {
                     'currency': 'eur',
                     'product_data': {
-                        'name': product.name,  # Nombre del producto
+                        'name': product.name,
                     },
-                    # Precio en centavos (Stripe usa centavos)
                     'unit_amount': product.price * 100,
                 },
-                # Cantidad de este producto en el carrito
                 'quantity': item['quantity'],
             })
 
         try:
-            # Crear la sesión de pago de Stripe con el total calculado
             checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],  # Aceptar pagos con tarjeta
-                line_items=line_items,  # Los productos que el usuario va a pagar
-                mode='payment',  # Modo de pago único
-                success_url='http://localhost:8000/success',  # URL de éxito
-                cancel_url='http://localhost:8000/cancel',    # URL de cancelación
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                success_url='http://localhost:8000/success',
+                cancel_url='http://localhost:8000/cancel',
             )
             return JsonResponse({
-                'id': checkout_session.id  # Regresar el ID de la sesión para redirigir al frontend
+                'id': checkout_session.id
             })
         except Exception as e:
             return JsonResponse({
-                'error': str(e)  # Devolver el error si ocurre algún problema
+                'error': str(e)
             }, status=500)
 
 
 def contact(request):
+    if request.method == 'POST':
+        # Se capturan los datos del formulario
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+
+        # Se prepara el correo para la empresa
+        subject_to_company = f"Nuevo mensaje de contacto de {name}"
+        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
+        recipient_list_company = ['ritualusinfo@gmail.com']
+
+        # Se prepara el correo de confirmación para el usuario
+        subject_to_user = "Confirmación de tu mensaje en RitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        recipient_list_user = [email]
+
+        try:
+            # Se envían los correos (aparecerá en la consola)
+            send_mail(subject_to_company, message_to_company,
+                      'ritualusinfo@gmail.com', recipient_list_company)
+            send_mail(subject_to_user, message_to_user,
+                      'ritualusinfo@gmail.com', recipient_list_user)
+            # Si tiene éxito:
+            messages.success(
+                request, '¡Tu mensaje ha sido enviado exitosamente! Revisa la consola para simular el envío de correos.')
+        except Exception as e:
+            # Si ocurre un error:
+            messages.error(
+                request, f'Ocurrió un error al enviar tu mensaje: {e}')
+
+        # Se redirige de nuevo a la página de contacto
+        return redirect('contact')
+    # Si no es POST, simplemente renderiza la plantilla
     return render(request, 'contact.html')
 
 
 def about(request):
     return render(request, 'about.html')
+
+
+def order_tracking_view(request):
+    order = None
+    order_products = None
+    if request.GET.get('order_id'):
+        order_id = request.GET['order_id']
+        try:
+            order = Order.objects.get(id=order_id, user_id=request.user.id)
+            order_products = OrderProduct.objects.filter(order_id=order)
+            time_to_delivered = now() - order.date
+            if time_to_delivered >= timedelta(minutes=5):
+                order.status = 'delivered'
+                order.save()
+        except Order.DoesNotExist:
+            order = None
+            order_products = None
+    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})
+
+
+def search_products(request):
+    query = request.GET.get('query', '')
+    print(query)
+    if query:
+        
+        products = Product.objects.filter(name__icontains=query)[:10]  
+        print(products)
+        results = [{'id': product.id, 'name': product.name} for product in products]
+        print(results)
+        return JsonResponse({'results': results})
+    return JsonResponse({'results': []})

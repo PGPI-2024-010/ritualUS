@@ -1,0 +1,99 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-text">
+        <h1>Confirmar pedido</h1>
+    </div>
+</section>
+
+<!-- Contenido principal -->
+<section class="main-content">
+    <div class="container featured-products">
+        <!-- Lista de productos en el carrito -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Verificar si hay productos en el carrito -->
+            <div class="products-grid">
+                {% for item in cart_items %}
+                <div class="product-card">
+                    <img src="{{ item.product_id.image.url }}" alt="{{ item.product.name }}">
+                    <div class="product-details">
+                        <h3>{{ item.product_id.name }}</h3>
+                        <p class="price">
+                            Precio unitario: {{ item.unity_price|floatformat:2 }} €
+                        </p>
+                        <p class="price">
+                            Cantidad: {{ item.quantity }}
+                        </p>
+                        <p class="price">
+                            Total: {{ item.order_product_price|floatformat:2 }} €
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span></h3>
+            <form method="POST" action="{% url 'confirmed_order' %}">
+                <body>Se enviará un correo de confirmación a la siguiente dirección:</body>
+                {% if authenticated %}
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                {% else %}
+                <li><strong>Email:</strong>
+                <input type="email" name="email" id="email" value="{{ email }}" required>
+                </li>
+                {% endif %}
+
+                {% if authenticated %}
+                <li><strong>Nombre:</strong> {{ user.first_name }}</li>
+                {% else %}
+                <li><strong>Nombre:</strong>
+                <input type="text" name="first_name" id="first_name" value="{{ first_name }}" required>
+                </li>
+                {% endif %}
+
+
+                {% if authenticated %}
+                <li><strong>Apellido:</strong> {{ user.last_name }}</li>
+                {% else %}
+                <li><strong>Apellido:</strong>
+                <input type="text" name="last_name" id="last_name" value="{{ last_name }}" required>
+                </li>
+                {% endif %}
+
+                <li><strong>Método de pago:</strong>
+                <label>
+                    <input type="radio" name="payment_method" value="card" required>
+                    Tarjeta
+                </label>
+                <label>
+                    <input type="radio" name="payment_method" value="cash">
+                    Efectivo
+                </label>
+                </li>
+                <li><strong>País:</strong>
+                    <input type="text" name="country" required>
+                </li>
+                <li><strong>Ciudad:</strong>
+                    <input type="text" name="city" required>
+                </li>
+                <li><strong>Código postal:</strong>
+                    <input type="text" name="postal_code" required>
+                </li>
+                <li><strong>Calle:</strong>
+                    <input type="text" name="street" required>
+                </li>
+                <li><strong>Número:</strong>
+                    <input type="text" name="number" required>
+                </li>
+                <li><strong>Apartamento:</strong> (Si no vive en un piso no rellene esta casilla)
+                    <input type="text" name="apartment_number">
+                </li>
+                {% csrf_token %}
+                <button type="submit" class="btn btn-checkout">Confirmar pedido</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

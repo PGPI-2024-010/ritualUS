@@ -27,11 +27,13 @@
         
         {% if product.is_available %}
         <div class="action-row">
-            <div class="quantity-selector">
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" data-max-stock="{{ product.stock }}">
-                
-            </div>
-            <a href="{{ product.get_add_to_cart_url }}"  id="addToCartBtn" data-add-to-cart-url="{{ product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+            <form action="{% url 'update_cart' %}?product_id={{ product.id }}&quantity=quantity" method="GET">
+                <div class="quantity-selector">
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" data-max-stock="{{ product.stock }}">
+                </div>
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn btn-add-cart">Agregar al Carrito</button>
+            </form>
         </div>
         <p id="quantity-error" style="color: red; display: none;">La cantidad debe ser un número entre 1 y {{ product.stock }}.</p>
         {% else %}
@@ -62,7 +64,7 @@
                                     {{ recommended_product.price }} €
                                     {% endif %}
                                 </p>
-                                <a href="{{ recommended_product.get_add_to_cart_url }}" class="btn btn-add-cart">Agregar al Carrito</a>
+                                <a href="{% url 'update_cart' %}?product_id={{ product.id }}&quantity=1" class="btn btn-add-cart">Agregar al Carrito</a>
                             </div>
                         </div>
                     {% endif %}
@@ -81,4 +83,14 @@
         
     </div>
 </section>
+<style>
+    .swiper-wrapper p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 15px 0;
+    color: #000000;
+
+}
+
+</style>
 {% endblock %}

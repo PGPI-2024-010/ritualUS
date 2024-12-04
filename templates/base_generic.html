@@ -47,6 +47,12 @@
    <header>
     <nav class="navbar">
         <a href="/" class="logo">RitualUS</a>
+        {% if user.is_staff %}
+        <!-- Botón solo visible para administradores -->
+        <div class="text-center mt-5">
+            <a href="/admin" class="btn">Administración</a>
+        </div>
+        {% endif %}
         <ul class="nav-links">  
             <form method="get" id="searchForm">
                 <div class="input-form">

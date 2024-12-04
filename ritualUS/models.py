@@ -97,6 +97,7 @@ class Order(models.Model):
         Address, on_delete=models.CASCADE, related_name="order", blank=True, null=True)
     status = models.CharField(max_length=50, choices=OrderStatus.choices(
     ), default=OrderStatus.PENDING.value)
+    shipping_price = models.FloatField(default=5.0)
 
 
 class OrderProduct(models.Model):

@@ -39,13 +39,36 @@
     <link rel="stylesheet" href="{% static 'css/signup.css' %}">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link rel="icon" href="{% static 'images/icons/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 </head>
 <body>
    <!-- Navbar -->
    <header>
     <nav class="navbar">
         <a href="/" class="logo">RitualUS</a>
-        <ul class="nav-links">
+        {% if user.is_staff %}
+        <!-- Botón solo visible para administradores -->
+        <div class="text-center mt-5">
+            <a href="/admin" class="btn">Administración</a>
+        </div>
+        {% endif %}
+        <ul class="nav-links">  
+            <form method="get" id="searchForm">
+                <div class="input-form">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        name="query" 
+                        class="form-control search-input" 
+                        placeholder="Buscar productos..." 
+                        aria-label="Buscar" 
+                        autocomplete="off">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+
+            </form>
+            
             <li><a href="/">Inicio</a></li>
             <li><a href="/products/">Productos</a></li>
             <li><a href="/about/">Nosotros</a></li>
@@ -85,5 +108,41 @@
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="{% static 'js/swiper-custom.js' %}" defer></script>
     <script src="{% static 'js/quantity-validation.js' %}"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+
+    searchInput.addEventListener("input", function () {
+        const query = this.value;
+
+        if (query.length >= 2) {
+            searchResults.style.display = 'block';  // Muestra los resultados
+
+            fetch(`/search/?query=${query}`, {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const results = data.results;
+                let html = '<ul>';
+                results.forEach(product => {
+                    html += `<li><a href="/product/${product.id}/">${product.name}</a></li>`;
+                });
+                html += '</ul>';
+                searchResults.innerHTML = html;
+            })
+            .catch(err => {
+                searchResults.innerHTML = '<p>No se encontraron resultados.</p>';
+            });
+        } else {
+            searchResults.style.display = 'none';  // Oculta los resultados cuando el campo está vacío
+        }
+    });
+});
+
+    </script>
 </body>
 </html>

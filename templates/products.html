@@ -18,11 +18,52 @@
         <div style="display: flex; gap: 2rem;">
             <!-- Barra lateral -->
             <aside style="width: 25%; background-color: #f9f9f9; padding: 1rem; border-radius: 8px;">
-                <h4 class="m-text14">Categorías</h4>
-                <ul>
-                    <li><a href="/products" class="s-text13 active">Todos</a></li>
-					{% categories_li_a %}
-                </ul>
+				<form method="get" action="{% url 'products' %}" class="filter-form">
+					<!-- Filtro por Categoría -->
+					<div class="filter-group">
+						<label>Categoría</label>
+						<select name="category">
+							<option value="">Todas</option>
+							{% for category in categories %}
+							<option value="{{ category.id }}">{{ category.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				
+					<!-- Filtro por Departamento -->
+					<div class="filter-group">
+						<label>Departamento</label>
+						<select name="department">
+							<option value="">Todos</option>
+							{% for department in departments %}
+							<option value="{{ department }}">{{ department }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				
+					<!-- Filtro por Sección -->
+					<div class="filter-group">
+						<label>Sección</label>
+						<select name="section">
+							<option value="">Todas</option>
+							{% for section in sections %}
+							<option value="{{ section }}">{{ section }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				
+					<!-- Filtro por Fabricante -->
+					<div class="filter-group">
+						<label>Fabricante</label>
+						<select name="factory">
+							<option value="">Todos</option>
+							{% for factory in factories %}
+							<option value="{{ factory }}">{{ factory }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<button type="submit" class="btn">Aplicar Filtros</button>
+				</form>				
             </aside>
 
             <!-- Lista de productos -->

@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus
+from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus, ProductType
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -58,16 +58,42 @@ def signup_view(request):
 class ProductListView(ListView):
     template_name = 'products.html'
     context_object_name = 'products'
-    paginate_by = 10
+    paginate_by = 9
 
     def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Filtrar por categoría (si existe)
         category_id = self.request.GET.get('category')
         if category_id:
-            # Filtra los productos por la categoría seleccionada
-            return Product.objects.filter(product_type_id=category_id)
-        else:
-            # Si no hay filtro, muestra todos los productos
-            return Product.objects.all()
+            queryset = queryset.filter(product_type_id=category_id)
+
+        # Filtrar por departamento
+        department = self.request.GET.get('department')
+        if department:
+            queryset = queryset.filter(department__icontains=department)
+
+        # Filtrar por sección
+        section = self.request.GET.get('section')
+        if section:
+            queryset = queryset.filter(section__icontains=section)
+
+        # Filtrar por fabricante
+        factory = self.request.GET.get('factory')
+        if factory:
+            queryset = queryset.filter(factory__icontains=factory)
+
+        return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = ProductType.objects.all()
+        context['departments'] = Product.objects.values_list(
+            'department', flat=True).distinct().order_by('department')
+        context['sections'] = Product.objects.values_list(
+            'section', flat=True).distinct().order_by('section')
+        context['factories'] = Product.objects.values_list(
+            'factory', flat=True).distinct().order_by('factory')
+        return context
 
 
 def cart_view(request):
@@ -374,14 +400,12 @@ def contact(request):
 
         # Se prepara el correo para la empresa
         subject_to_company = f"Nuevo mensaje de contacto de {name}"
-        message_to_company = f"Nombre: {
-            name}\nEmail: {email}\nMensaje:\n{message}"
+        message_to_company = f"Nombre: {name}\nEmail: {email}\nMensaje:\n{message}"
         recipient_list_company = ['ritualusinfo@gmail.com']
 
         # Se prepara el correo de confirmación para el usuario
         subject_to_user = "Confirmación de tu mensaje en RitualUS"
-        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{
-            message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
+        message_to_user = f"Hola {name},\n\nGracias por contactarnos. Hemos recibido tu mensaje:\n\n{message}\n\nNos pondremos en contacto contigo pronto.\n\nSaludos,\nRitualUS"
         recipient_list_user = [email]
 
         try:
@@ -424,3 +448,16 @@ def order_tracking_view(request):
             order = None
             order_products = None
     return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})
+
+
+def search_products(request):
+    query = request.GET.get('query', '')
+    print(query)
+    if query:
+        
+        products = Product.objects.filter(name__icontains=query)[:10]  
+        print(products)
+        results = [{'id': product.id, 'name': product.name} for product in products]
+        print(results)
+        return JsonResponse({'results': results})
+    return JsonResponse({'results': []})

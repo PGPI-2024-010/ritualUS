@@ -135,7 +135,6 @@ def update_cart(request):
         order.shipping_price = 0.00
     else:
         order.shipping_price = 5.00
-    print(order.shipping_price)
     order.save()
     order_product.save()
     return redirect('cart')
@@ -237,7 +236,6 @@ def confirmed_order(request):
     for order_product in order.order_product.all():
         product = order_product.product_id
         message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
-
     total_price = sum(
         product.quantity * product.unity_price for product in order.order_product.all())
     message += f"\nTotal: {total_price}€"
@@ -304,7 +302,10 @@ class PaymentSuccessView(View):
                 total_price += product.product_id.discount_price * product.quantity
             else:
                 total_price += product.product_id.price * product.quantity
-
+        for order_product in order.order_product.all():
+            product = order_product.product_id
+            product.stock -= order_product.quantity
+            product.save()
         if user.is_authenticated:
             first_name = user.first_name
             last_name = user.last_name
@@ -353,7 +354,7 @@ class PaymentView(View):
             'order': order,
         })
 
-    def post(self, request):
+    def post(self, request, order_id):
         order = Order.objects.get(id=order_id)
         cart_items = request.session.get('products', [])
 

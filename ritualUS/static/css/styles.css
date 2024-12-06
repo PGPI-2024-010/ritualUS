@@ -95,6 +95,15 @@ ul, li {
 }
 
 
+.shipping-banner {
+    position: relative;
+    background-color: #555;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    font-size: 1.2rem;
+}
+
 
 /* Hero Section */
 .hero {

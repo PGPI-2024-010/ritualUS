@@ -122,7 +122,11 @@
         <h2>Resumen de datos de entrega</h2>
         <ul class="order-details">
             <li><strong>Número de pedido:</strong> {{ order.id }}</li>
-            <li><strong>Nombre:</strong> {{ order.user.first_name }} {{ order.user.last_name }}</li>
+            {% if order.user %}
+                <li><strong>Nombre:</strong> {{ order.user.first_name }} {{ order.user.last_name }}</li>
+            {% else %}
+                <li><strong>Nombre:</strong> Usuario desconocido</li>
+            {% endif %}
             <li><strong>Dirección completa:</strong> {{ order.address.street }} {{ order.address.number }} - {{ order.address.city }}, {{ order.address.country }} - Código Postal: {{ order.address.postal_code }}</li>
             <li><strong>Estado de pedido:</strong> {{ order.status }}</li>
         </ul>
@@ -145,6 +149,7 @@
                         <span class="product-quantity">x {{ item.quantity }}</span>
                     </li>
                 {% endfor %}
+                <li class="shipping-cost">+ €{{ shipping_price|floatformat:2 }} de envío</li>
             </ul>
         </div>
     </div>

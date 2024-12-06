@@ -107,7 +107,8 @@
                     </li>
                 {% endfor %}
                 <li><strong>Precio total:</strong> €{{ total_price|floatformat:2 }}</li>
-                <li><strong>Gastos de envio:</strong>€{{ order.shipping_price|floatformat:2 }}</li>
+                <li><strong>Gastos de envio:</strong> <span style="color: red; font-weight: bold;">€{{ order.shipping_price|floatformat:2 }} </span></li>
+                <li><strong>Total final:</strong> €{{ total_with_shipping|floatformat:2 }}</li>
             </ul>
         </div>
     </section>

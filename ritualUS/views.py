@@ -181,12 +181,14 @@ def order_confirmation_view(request):
     else:
         order.shipping_price = 5.00
     order.save()
+    total_with_shipping = cart_total + order.shipping_price
 
     context = {
         'email': email,
         'cart_items': cart_items,
         'cart_total': cart_total,
         'authenticated': request.user.is_authenticated,
+        'total_with_shipping': total_with_shipping,
         'order': order,
     }
     return render(request, 'order_confirmation.html', context)
@@ -244,10 +246,10 @@ def confirmed_order(request):
               from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
-        order.status = 'in delivery'
+        order.status = 'pending'
     elif payment_method == 'card':
         order.payment = 'credit card'
-        order.status = 'confirmed'
+        order.status = 'pending'
         order.save()
         return redirect('payment', order_id=order.id)
     order.save()
@@ -294,9 +296,10 @@ class PaymentSuccessView(View):
         order_products = OrderProduct.objects.filter(order_id=order_id)
         address = order.address
         user = request.user
-        order.status = 'in delivery'
+        order.status = 'confirmed'
         order.save()
         total_price = 0
+        
         for product in order_products:
             if product.product_id.discount_price:
                 total_price += product.product_id.discount_price * product.quantity
@@ -313,7 +316,8 @@ class PaymentSuccessView(View):
             first_name = request.session.get('first_name', 'Desconocido')
             last_name = request.session.get('last_name', 'Desconocido')
 
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
+        total_with_shipping = total_price + order.shipping_price
+        return render(request, 'payment_success.html', {'total_price': total_price,'total_with_shipping': total_with_shipping ,'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
 
 
 class PaymentView(View):
@@ -338,9 +342,10 @@ class PaymentView(View):
                 'quantity': item.quantity,
                 'address': address,
             })
+        total_with_shipping = total_price + order.shipping_price
 
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),
+            amount=int(total_with_shipping * 100),
             currency='eur',
             description='Pago de productos'
         )
@@ -348,6 +353,7 @@ class PaymentView(View):
         return render(request, 'payment.html', {
             'order_products': order_products,
             'total_price': total_price,
+            'total_with_shipping': total_with_shipping, 
             'client_secret': payment_intent.client_secret,
             'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY,
             'order_id': order_id,
@@ -435,19 +441,21 @@ def about(request):
 def order_tracking_view(request):
     order = None
     order_products = None
+    shipping_price = 0
+
     if request.GET.get('order_id'):
         order_id = request.GET['order_id']
         try:
             order = Order.objects.get(id=order_id, user_id=request.user.id)
             order_products = OrderProduct.objects.filter(order_id=order)
-            time_to_delivered = now() - order.date
-            if time_to_delivered >= timedelta(minutes=5):
-                order.status = 'delivered'
-                order.save()
+            shipping_price = order.shipping_price
+            order.save()
         except Order.DoesNotExist:
             order = None
             order_products = None
-    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})
+
+
+    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products, 'shipping_price': shipping_price})
 
 
 def search_products(request):

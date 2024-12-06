@@ -231,6 +231,35 @@ footer p {
     color: #333;
 }
 
+/* Order confirmation */
+form div {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-size: 1.2em;
+    padding: 0 10px;
+}
+
+.btn-checkout {
+    background-color: #f67;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
 
 /* Products filter */
 
@@ -541,4 +570,13 @@ footer p {
 
 .social-links a:hover {
     color: #ff6f61;
+}
+
+/*Order*/
+.shipping-cost {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff6f61; /* Color de los gastos de envío */
+    text-align: right; /* Alineado a la derecha */
 }

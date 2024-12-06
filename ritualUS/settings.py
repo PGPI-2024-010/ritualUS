@@ -38,7 +38,7 @@ DEBUG = True
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'ritualUSApp.pythonanywhere.com', 'www.ritualUSApp.pythonanywhere.com']
 AUTH_USER_MODEL = 'ritualUS.CustomUser'
 
 # Application definition
@@ -160,7 +160,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'ritualUS/static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = '/home/julsanmar2/ritualUS/staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Default primary key field type

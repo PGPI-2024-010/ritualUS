@@ -45,6 +45,14 @@
                 {% endfor %}
             </div>
             <h3>Total del Carrito: <span class="cart-total">{{ cart_total|floatformat:2 }} €</span></h3>
+            <h3 style="color: red; font-weight: bold;">
+                {% if cart_total >= 20 %}
+                ¡Envío gratuito!
+                {% else %}
+                Costo de envío: 5 €
+
+                {% endif %}
+            </h3>
             <a href="{% url 'order_confirmation_view' %}" class="btn btn-checkout">Confirmar pedido</a>
             {% else %}
             <body>Tu carrito está vacío. <a href="{% url 'products' %}">Volver a la tienda</a></body>

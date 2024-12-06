@@ -1,6 +1,6 @@
 
 from django.views.generic import ListView, DetailView
-from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus
+from .models import Product, Category, OrderProduct, Order, Address, Payment, OrderStatus, ProductType
 from django.contrib.auth.decorators import login_required
 from .forms import CustomSignupForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -58,16 +58,42 @@ def signup_view(request):
 class ProductListView(ListView):
     template_name = 'products.html'
     context_object_name = 'products'
-    paginate_by = 10
+    paginate_by = 9
 
     def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Filtrar por categoría (si existe)
         category_id = self.request.GET.get('category')
         if category_id:
-            # Filtra los productos por la categoría seleccionada
-            return Product.objects.filter(product_type_id=category_id)
-        else:
-            # Si no hay filtro, muestra todos los productos
-            return Product.objects.all()
+            queryset = queryset.filter(product_type_id=category_id)
+
+        # Filtrar por departamento
+        department = self.request.GET.get('department')
+        if department:
+            queryset = queryset.filter(department__icontains=department)
+
+        # Filtrar por sección
+        section = self.request.GET.get('section')
+        if section:
+            queryset = queryset.filter(section__icontains=section)
+
+        # Filtrar por fabricante
+        factory = self.request.GET.get('factory')
+        if factory:
+            queryset = queryset.filter(factory__icontains=factory)
+
+        return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = ProductType.objects.all()
+        context['departments'] = Product.objects.values_list(
+            'department', flat=True).distinct().order_by('department')
+        context['sections'] = Product.objects.values_list(
+            'section', flat=True).distinct().order_by('section')
+        context['factories'] = Product.objects.values_list(
+            'factory', flat=True).distinct().order_by('factory')
+        return context
 
 
 def cart_view(request):
@@ -91,6 +117,7 @@ def update_cart(request):
     product_id = request.GET.get('product_id')
     quantity = int(request.GET.get('quantity', 1))
     product = Product.objects.get(id=product_id)
+    total = 0
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(
             user=request.user, status='pending')
@@ -101,6 +128,14 @@ def update_cart(request):
                                                                 defaults={'quantity': quantity, 'unity_price': product.price, })
     order_product.quantity = quantity
     order_product.unity_price = product.price
+    orderProducts = OrderProduct.objects.filter(order_id=order)
+    for orderProduct in orderProducts:
+        total += orderProduct.unity_price * orderProduct.quantity
+    if total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    order.save()
     order_product.save()
     return redirect('cart')
 
@@ -108,6 +143,7 @@ def update_cart(request):
 def remove_from_cart(request):
     product_id = request.GET.get('product_id')
     product = Product.objects.get(id=product_id)
+    total = 0.00
     if request.user.is_authenticated:
         order, created = Order.objects.get_or_create(
             user=request.user, status='pending')
@@ -116,6 +152,14 @@ def remove_from_cart(request):
             user=None, status='pending')
     order_product, created = OrderProduct.objects.get_or_create(
         order_id=order, product_id=product)
+    orderProducts = OrderProduct.objects.filter(order_id=order)
+    for orderProduct in orderProducts:
+        total += orderProduct.unity_price * orderProduct.quantity
+    if total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    order.save()
     order_product.delete()
     return redirect('cart')
 
@@ -132,11 +176,20 @@ def order_confirmation_view(request):
     cart_items = OrderProduct.objects.filter(order_id=order) if order else []
     cart_total = sum(item.unity_price *
                      item.quantity for item in cart_items) if order else 0
+    if cart_total >= 20:
+        order.shipping_price = 0.00
+    else:
+        order.shipping_price = 5.00
+    order.save()
+    total_with_shipping = cart_total + order.shipping_price
+
     context = {
         'email': email,
         'cart_items': cart_items,
         'cart_total': cart_total,
         'authenticated': request.user.is_authenticated,
+        'total_with_shipping': total_with_shipping,
+        'order': order,
     }
     return render(request, 'order_confirmation.html', context)
 
@@ -185,7 +238,6 @@ def confirmed_order(request):
     for order_product in order.order_product.all():
         product = order_product.product_id
         message += f"- {product.name}: {order_product.quantity} x {product.price}€\n"
-
     total_price = sum(
         product.quantity * product.unity_price for product in order.order_product.all())
     message += f"\nTotal: {total_price}€"
@@ -194,10 +246,10 @@ def confirmed_order(request):
               from_email="ritualus@gmail.com", recipient_list=[email])
     if payment_method == 'cash':
         order.payment = 'cash'
-        order.status = 'in delivery'
+        order.status = 'pending'
     elif payment_method == 'card':
         order.payment = 'credit card'
-        order.status = 'confirmed'
+        order.status = 'pending'
         order.save()
         return redirect('payment', order_id=order.id)
     order.save()
@@ -231,7 +283,6 @@ class CartView(View):
             {'product_id': 2, 'name': 'Producto 2', 'price': 2, 'quantity': 1},
             {'product_id': 3, 'name': 'Producto 3', 'price': 3, 'quantity': 1},
         ]
-
         # Guardar los productos en la sesión
         request.session['cart_items'] = cart_items
 
@@ -245,15 +296,19 @@ class PaymentSuccessView(View):
         order_products = OrderProduct.objects.filter(order_id=order_id)
         address = order.address
         user = request.user
-        order.status = 'in delivery'
+        order.status = 'confirmed'
         order.save()
         total_price = 0
+        
         for product in order_products:
             if product.product_id.discount_price:
                 total_price += product.product_id.discount_price * product.quantity
             else:
                 total_price += product.product_id.price * product.quantity
-
+        for order_product in order.order_product.all():
+            product = order_product.product_id
+            product.stock -= order_product.quantity
+            product.save()
         if user.is_authenticated:
             first_name = user.first_name
             last_name = user.last_name
@@ -261,7 +316,8 @@ class PaymentSuccessView(View):
             first_name = request.session.get('first_name', 'Desconocido')
             last_name = request.session.get('last_name', 'Desconocido')
 
-        return render(request, 'payment_success.html', {'total_price': total_price, 'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
+        total_with_shipping = total_price + order.shipping_price
+        return render(request, 'payment_success.html', {'total_price': total_price,'total_with_shipping': total_with_shipping ,'address': address, 'order_id': order_id, 'order': order, 'order_products': order_products, 'first_name': first_name, 'last_name': last_name})
 
 
 class PaymentView(View):
@@ -286,21 +342,25 @@ class PaymentView(View):
                 'quantity': item.quantity,
                 'address': address,
             })
+        total_with_shipping = total_price + order.shipping_price
 
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(total_price * 100),
+            amount=int(total_with_shipping * 100),
             currency='eur',
             description='Pago de productos'
         )
+        print(order.shipping_price)
         return render(request, 'payment.html', {
             'order_products': order_products,
             'total_price': total_price,
+            'total_with_shipping': total_with_shipping, 
             'client_secret': payment_intent.client_secret,
             'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY,
             'order_id': order_id,
+            'order': order,
         })
 
-    def post(self, request):
+    def post(self, request, order_id):
         order = Order.objects.get(id=order_id)
         cart_items = request.session.get('products', [])
 
@@ -381,19 +441,21 @@ def about(request):
 def order_tracking_view(request):
     order = None
     order_products = None
+    shipping_price = 0
+
     if request.GET.get('order_id'):
         order_id = request.GET['order_id']
         try:
             order = Order.objects.get(id=order_id, user_id=request.user.id)
             order_products = OrderProduct.objects.filter(order_id=order)
-            time_to_delivered = now() - order.date
-            if time_to_delivered >= timedelta(minutes=5):
-                order.status = 'delivered'
-                order.save()
+            shipping_price = order.shipping_price
+            order.save()
         except Order.DoesNotExist:
             order = None
             order_products = None
-    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products})
+
+
+    return render(request, 'order_tracking.html', {'order': order, 'order_products': order_products, 'shipping_price': shipping_price})
 
 
 def search_products(request):

@@ -11,8 +11,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import environ
 from pathlib import Path
-
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
+runRemote = True
+if runRemote:
+    SECRET_KEY = env('RITUALUS_KEY')
+else:
+    SECRET_kEY = ''
 
 STRIPE_API_KEY = 'sk_test_51QOizQL6pSx3PYtRvOotv226hmJhjzsKqS7RRHl5wBSUH3kTY5hygQgbLt2ziJc1DYTNoiylV3kA0qgl6XrbJV9H00Gh7VsP51'  # clave secreta
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51QOizQL6pSx3PYtRJV56TkRpmAfMEavBeyuwZMEZZ6iZqLxp1Ef797WPBr7J1HQc5JDw62dZbElmR6T5INXN8mt100cpgCfCyM'  # clave pública
@@ -23,14 +32,13 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 SECRET_KEY = 'django-insecure-3qng-%*rfl!(*3(6_a0c@g=g+-99wu@++)10$d4fl)@gf2%c!z'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 AUTH_USER_MODEL = 'ritualUS.CustomUser'
 
 # Application definition
@@ -44,7 +52,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'allauth',
     'allauth.account',
-    'crispy_forms',
     'ritualUS'
 ]
 
@@ -169,4 +176,3 @@ ACCOUNT_EMAIL_REQUIRED = True  # Requiere un correo electrónico para el registr
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-

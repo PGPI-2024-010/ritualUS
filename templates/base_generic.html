@@ -77,7 +77,7 @@
             <li><a href="/order_tracking/">Seguimiento de pedido</a></li>
             {% if user.is_authenticated %}
             <!-- Si el usuario está autenticado, muestra "Mi perfil" -->
-            <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-user"></i> Mi perfil</a></li>
+            <li><a href="{% url 'account_logout' %}">Mi perfil</a></li>
             {% else %}
             <!-- Si no está autenticado, muestra "Iniciar sesión" -->
             <li><a href="{% url 'account_login' %}">Iniciar Sesión</a></li>

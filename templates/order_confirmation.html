@@ -100,7 +100,7 @@
             
                     <div>
                         <label for="postal_code"><strong>Código postal:</strong></label>
-                        <input type="text" name="postal_code" id="postal_code" required>
+                        <input type="number" name="postal_code" id="postal_code" required>
                     </div>
                     
                     <div>
@@ -110,12 +110,12 @@
             
                     <div>
                         <label for="number"><strong>Número:</strong></label>
-                        <input type="text" name="number" id="number" required>
+                        <input type="number" name="number" id="number" required>
                     </div>
             
                     <div>
                         <label for="apartment_number"><strong>Apartamento:</strong> (Si no vive en un piso no rellene esta casilla)</label>
-                        <input type="text" name="apartment_number" id="apartment_number">
+                        <input type="number" name="apartment_number" id="apartment_number">
                     </div>
                 </fieldset>
                 <h2>Total a Pagar: <span class="total-price">{{ total_with_shipping|floatformat:2 }} €</span></h2>
